@@ -180,3 +180,4 @@ function tryStat(path) {
     return undefined;
   }
 }
+

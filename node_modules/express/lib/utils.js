@@ -301,3 +301,4 @@ function parseExtendedQueryString(str) {
 function newObject() {
   return {};
 }
+

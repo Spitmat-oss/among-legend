@@ -1177,3 +1177,4 @@ function stringify (value, replacer, spaces, escape) {
 
   return json
 }
+

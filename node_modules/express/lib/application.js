@@ -659,3 +659,4 @@ function tryRender(view, options, callback) {
     callback(err);
   }
 }
+

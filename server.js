@@ -315,3 +315,4 @@ function assignRoles(playerNames, season = 's1') {
 server.listen(PORT, () => {
   console.log(`✔ Among Legend — Serveur lancé sur http://localhost:${PORT}`);
 });
+

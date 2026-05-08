@@ -70,3 +70,4 @@ s4:{id:'s4',num:4,title:"Le Crépuscule des Dieux",subtitle:"Les dieux se retire
 };
 
 if(typeof module!=='undefined')module.exports={SEASONS_DATA};
+

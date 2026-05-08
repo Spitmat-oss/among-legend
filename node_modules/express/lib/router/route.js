@@ -228,3 +228,4 @@ methods.forEach(function(method){
     return this;
   };
 });
+

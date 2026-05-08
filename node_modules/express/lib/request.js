@@ -523,3 +523,4 @@ function defineGetter(obj, name, getter) {
     get: getter
   });
 }
+
