@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Among Legend — Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05040a;--surface:#0d0b14;--surface2:#141020;--surface3:#1c1628;
+  --border:#2d2040;--border2:#1e1530;
+  --gold:#c9933a;--gl:#e8b96a;--gd:#7a5520;
+  --cream:#f0e6d0;--muted:#6a5878;--muted2:#4a3858;
+  --safe:#2d8a5a;--sd:#0a2018;--st:#6dd4a0;--sb:#4dba80;
+  --evil:#c43535;--ed:#280a0a;--et:#f07070;--eb:#e04545;
+  --neu:#6a5abf;--nd:#180f35;--nt:#a090e8;--nb:#8070d0;
+  --ev:#a87010;--evd:#201400;--evt:#e8b040;--evb:#d09030;
+  --s1:#c9933a;--s1b:#1a0e00;--s1g:rgba(201,147,58,.12);
+  --s2:#9060c0;--s2b:#100818;--s2g:rgba(144,96,192,.12);
+  --s3:#d04020;--s3b:#1a0800;--s3g:rgba(208,64,32,.12);
+  --s4:#3060c0;--s4b:#040810;--s4g:rgba(48,96,192,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--cream);font-family:'Crimson Text',Georgia,serif;min-height:100vh;overflow-x:hidden;}
+canvas#pt{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;background:rgba(5,4,10,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;}
+.tlogo{font-family:'Cinzel Decorative',serif;font-size:1rem;font-weight:700;background:linear-gradient(135deg,var(--gold),var(--gl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+.tseason{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--s1);border:.5px solid var(--s1);padding:2px 8px;border-radius:2px;opacity:.85;}
+.tsp{flex:1;}
+.btn-pt{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.5rem;background:linear-gradient(135deg,var(--gd),var(--gold),var(--gl));border:none;border-radius:2px;color:#05040a;font-family:'Cinzel',serif;font-weight:700;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .2s;box-shadow:0 0 20px rgba(201,147,58,.2);}
+.btn-pt:hover{transform:scale(1.03);box-shadow:0 0 30px rgba(201,147,58,.4);}
+.mnav{position:fixed;top:58px;left:0;right:0;z-index:190;background:rgba(13,11,20,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border2);display:flex;overflow-x:auto;scrollbar-width:none;}
+.mnav::-webkit-scrollbar{display:none;}
+.ntab{flex-shrink:0;padding:.9rem 1.4rem;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .25s;white-space:nowrap;}
+.ntab:hover{color:var(--cream);}
+.ntab.t1.active{color:var(--s1);border-bottom-color:var(--s1);}
+.ntab.t2.active{color:var(--s2);border-bottom-color:var(--s2);}
+.ntab.t3.active{color:var(--s3);border-bottom-color:var(--s3);}
+.ntab.t4.active{color:var(--s4);border-bottom-color:var(--s4);}
+.ntab.ta.active{color:var(--gold);border-bottom-color:var(--gold);}
+.ndot{width:5px;height:5px;background:var(--evt);border-radius:50%;display:inline-block;margin-left:5px;vertical-align:middle;box-shadow:0 0 6px var(--evt);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.pc{padding-top:116px;min-height:100vh;position:relative;z-index:10;}
+.tp{display:none;}.tp.active{display:block;}
+.sp1{background:linear-gradient(180deg,var(--s1b) 0%,var(--bg) 55%);}
+.sp2{background:linear-gradient(180deg,var(--s2b) 0%,var(--bg) 55%);}
+.sp3{background:linear-gradient(180deg,var(--s3b) 0%,var(--bg) 55%);}
+.sp4{background:linear-gradient(180deg,var(--s4b) 0%,var(--bg) 55%);}
+.shero{position:relative;padding:4rem 2rem 3rem;text-align:center;overflow:hidden;}
+.shero::before{content:'';position:absolute;inset:0;background:var(--hg,radial-gradient(ellipse 70% 80% at 50% 0%,rgba(201,147,58,.1),transparent 70%));pointer-events:none;}
+.shero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ha,#c9933a),transparent);}
+.shero>*{position:relative;z-index:1;}
+.snum{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;margin-bottom:.5rem;opacity:.7;}
+.sname{font-family:'Cinzel Decorative',serif;font-size:clamp(1.8rem,5vw,4rem);font-weight:900;text-transform:uppercase;letter-spacing:.06em;line-height:1.1;margin-bottom:.6rem;}
+.stagline{font-size:1rem;color:var(--muted);font-style:italic;margin-bottom:.4rem;}
+.stheme{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;opacity:.6;margin-bottom:1.5rem;}
+.smeta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem;}
+.sbadge{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:2px;border:.5px solid;}
+.slore{max-width:600px;margin:0 auto;font-size:1rem;color:var(--muted);font-style:italic;line-height:1.7;border-left:2px solid;padding-left:1rem;}
+.rsec{padding:1.2rem 1.5rem .4rem;}
+.rstit{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;}
+.rstit::after{content:'';flex:1;height:.5px;background:var(--border);}
+.rscnt{background:var(--surface2);border:.5px solid var(--border);border-radius:20px;padding:1px 8px;font-size:.6rem;color:var(--muted);}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:0 1.5rem .8rem;}
+.rc{background:linear-gradient(170deg,rgba(255,255,255,.02),rgba(255,255,255,0) 45%),var(--surface);border:.5px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;box-shadow:0 8px 24px rgba(0,0,0,.22);}
+.rc::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent 35%);opacity:.6;pointer-events:none;}
+.rc:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.32);}
+.rc.safe:hover{border-color:var(--safe);box-shadow:0 8px 30px rgba(45,138,90,.2);}
+.rc.evil:hover{border-color:var(--evil);box-shadow:0 8px 30px rgba(196,53,53,.2);}
+.rc.neu:hover{border-color:var(--neu);box-shadow:0 8px 30px rgba(106,90,191,.2);}
+.rc.ev:hover{border-color:var(--ev);box-shadow:0 8px 30px rgba(168,112,16,.3);}
+.rctb{height:3px;}
+.rc.safe .rctb{background:linear-gradient(90deg,transparent,var(--sb),transparent);}
+.rc.evil .rctb{background:linear-gradient(90deg,transparent,var(--eb),transparent);}
+.rc.neu .rctb{background:linear-gradient(90deg,transparent,var(--nb),transparent);}
+.rc.ev .rctb{background:linear-gradient(90deg,transparent,var(--evb),transparent);}
+.rch{display:flex;align-items:center;gap:10px;padding:12px 12px 10px;}
+.rcic{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.rc.safe .rcic{background:var(--sd);color:var(--st);}
+.rc.evil .rcic{background:var(--ed);color:var(--et);}
+.rc.neu .rcic{background:var(--nd);color:var(--nt);}
+.rc.ev .rcic{background:var(--evd);color:var(--evt);}
+.rcnw{flex:1;min-width:0;}
+.rcn{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--cream);letter-spacing:.04em;line-height:1.2;}
+.rcs{font-size:10px;color:var(--muted);font-style:italic;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rcbg{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:2px;border:.5px solid;white-space:nowrap;flex-shrink:0;}
+.rc.safe .rcbg{color:var(--st);border-color:var(--safe);background:var(--sd);}
+.rc.evil .rcbg{color:var(--et);border-color:var(--evil);background:var(--ed);}
+.rc.neu .rcbg{color:var(--nt);border-color:var(--neu);background:var(--nd);}
+.rc.ev .rcbg{color:var(--evt);border-color:var(--ev);background:var(--evd);}
+.rcpv{padding:0 12px 10px;font-size:11px;color:var(--muted);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.rmo{display:none;position:fixed;inset:0;z-index:500;background:rgba(5,4,10,.92);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:1rem;overflow-y:auto;}
+.rmo.open{display:flex;}
+.rmd{background:var(--surface);border:.5px solid var(--border);border-radius:10px;width:100%;max-width:760px;max-height:92vh;overflow-y:auto;animation:rmin .35s cubic-bezier(.16,1,.3,1);}
+@keyframes rmin{from{opacity:0;transform:scale(.93) translateY(16px);}to{opacity:1;transform:none;}}
+.rmb{position:relative;padding:2.5rem 2rem 2rem;overflow:hidden;}
+.rmcl{position:absolute;top:1rem;right:1rem;width:32px;height:32px;background:rgba(255,255,255,.05);border:.5px solid var(--border);border-radius:4px;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .15s;}
+.rmcl:hover{color:var(--cream);border-color:var(--muted);}
+.rmf{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;margin-bottom:.4rem;}
+.rmn{font-family:'Cinzel Decorative',serif;font-size:clamp(1.6rem,4vw,2.8rem);font-weight:900;text-transform:uppercase;letter-spacing:.05em;line-height:1.1;margin-bottom:.3rem;}
+.rmt{font-size:.95rem;font-style:italic;opacity:.7;}
+.rmbd{padding:1.5rem 2rem;}
+.rg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.blk{background:var(--surface2);border:.5px solid var(--border);border-radius:6px;padding:10px 12px;}
+.blk.full{grid-column:1/-1;}
+.bt{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.bx{font-size:12px;color:var(--cream);line-height:1.55;}
+.bx em{color:var(--gold);font-style:italic;}
+.ci2{display:flex;gap:6px;font-size:11px;line-height:1.45;color:var(--cream);margin-bottom:4px;}
+.cb2{flex-shrink:0;margin-top:2px;}
+.ct{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px;}
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.spt{background:var(--bg);border:.5px solid var(--border);border-radius:4px;padding:7px 6px;text-align:center;}
+.spn{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--gold);line-height:1;}
+.spl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+.sps{font-size:8px;color:var(--muted);font-style:italic;margin-top:1px;}
+.idrow{display:flex;gap:5px;flex-wrap:wrap;}
+.idtag{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;border:.5px solid var(--border);background:var(--bg);color:var(--muted);}
+.cq{font-size:13px;font-style:italic;color:var(--gl);line-height:1.55;border-left:2px solid var(--gold);padding-left:10px;}
+.evbn{display:flex;align-items:center;gap:7px;background:var(--evd);border:.5px solid var(--ev);border-radius:4px;padding:5px 10px;margin-bottom:8px;}
+.evbt{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--evt);}
+.botag{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;border:.5px solid #1a3a5a;background:#080f18;color:#6ab0e0;display:inline-block;margin-bottom:6px;}
+.nwtag{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;border:.5px solid var(--nd);background:var(--nd);color:var(--nt);display:inline-block;margin-bottom:6px;}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:2rem 1.5rem;}
+.ccard{border:.5px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface);}
+.cbanner{padding:2rem 1.5rem 1.5rem;}
+.cnum{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:.4rem;opacity:.7;}
+.cnam{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem;}
+.cthm{font-size:.85rem;color:var(--muted);font-style:italic;margin-bottom:1rem;}
+.tbox{background:rgba(255,255,255,.02);border:.5px solid var(--border);border-radius:4px;padding:.8rem 1rem;margin:0 1.5rem 1rem;}
+.tlbl{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;}
+.ttxt{font-size:.9rem;color:var(--cream);font-style:italic;line-height:1.55;}
+.clock{padding:.7rem 1.5rem 1rem;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.ahero{padding:3rem 2rem;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.ahero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 0%,rgba(144,96,192,.06),transparent 70%);}
+.acards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;padding:2rem 1.5rem;}
+.acard{background:linear-gradient(170deg,rgba(255,255,255,.02),rgba(255,255,255,0) 45%),var(--surface);border:.5px solid var(--border);border-radius:8px;padding:1.2rem;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.22);}
+.acard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--aac,var(--gold)),transparent);}
+.astag{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem;}
+.anam{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--cream);margin-bottom:.5rem;}
+.atxt{font-size:.9rem;color:var(--muted);font-style:italic;line-height:1.55;}
+.alck{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.6rem;border:.5px dashed var(--border);border-radius:3px;margin-top:.7rem;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.mo{display:none;position:fixed;inset:0;z-index:400;background:rgba(5,4,10,.9);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:1rem;}
+.mo.open{display:flex;}
+.md{background:linear-gradient(170deg,rgba(255,255,255,.02),rgba(255,255,255,0) 45%),var(--surface);border:.5px solid var(--border);border-radius:10px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:min .3s cubic-bezier(.16,1,.3,1);box-shadow:0 24px 70px rgba(0,0,0,.45);}
+@keyframes min{from{opacity:0;transform:scale(.95) translateY(10px);}to{opacity:1;transform:none;}}
+.mhd{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:.5px solid var(--border);}
+.mtt{font-family:'Cinzel',serif;font-size:.9rem;font-weight:700;color:var(--gl);letter-spacing:.08em;}
+.mcl{width:30px;height:30px;background:transparent;border:.5px solid var(--border);border-radius:3px;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .15s;}
+.mcl:hover{color:var(--cream);border-color:var(--muted);}
+.mbd{padding:1.5rem;}
+.mtabs{display:flex;gap:4px;margin-bottom:1.5rem;background:var(--surface2);border:.5px solid var(--border);border-radius:4px;padding:4px;}
+.mtab{flex:1;padding:.5rem;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-radius:3px;text-align:center;transition:all .15s;}
+.mtab.active{background:rgba(201,147,58,.15);color:var(--gold);}
+.mpanel{display:none;}.mpanel.active{display:block;}
+.fg{margin-bottom:1.2rem;}
+.fl{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.4rem;}
+.fi{width:100%;padding:.75rem 1rem;background:var(--surface2);border:.5px solid var(--border);border-radius:3px;color:var(--cream);font-family:'Crimson Text',serif;font-size:1rem;outline:none;transition:border-color .15s;}
+.fi:focus{border-color:var(--gold);}
+.fsel{width:100%;padding:.75rem 1rem;background:var(--surface2);border:.5px solid var(--border);border-radius:3px;color:var(--cream);font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.1em;outline:none;cursor:pointer;}
+.fsel option{background:var(--surface2);}
+.bgold{width:100%;padding:.9rem;background:linear-gradient(135deg,var(--gd),var(--gold),var(--gl));border:none;border-radius:3px;color:#05040a;font-family:'Cinzel',serif;font-weight:700;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:.5rem;}
+.bgold:hover{opacity:.9;transform:scale(1.01);}
+.bgold:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.llist{display:flex;flex-direction:column;gap:8px;}
+.li2{display:flex;align-items:center;gap:1rem;background:var(--surface2);border:.5px solid var(--border);border-radius:4px;padding:.9rem 1.1rem;cursor:pointer;transition:border-color .15s;}
+.li2:hover{border-color:var(--gold);}
+.lnm{font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;color:var(--cream);}
+.lmt{font-size:.8rem;color:var(--muted);margin-top:2px;}
+.lcnt{font-family:'Cinzel',serif;font-size:.75rem;font-weight:700;text-align:right;}
+.lcnt.op{color:var(--gl);}
+.lcnt.fu{color:var(--et);}
+.lsp{font-size:.65rem;font-family:'Cinzel',serif;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-top:2px;display:inline-block;}
+.lsp.op{border:.5px solid var(--safe);color:var(--st);background:var(--sd);}
+.lsp.fu{border:.5px solid var(--evil);color:var(--et);background:var(--ed);}
+.nol{text-align:center;padding:2rem;color:var(--muted);font-style:italic;font-size:.9rem;}
+.rfbtn{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1rem;padding:.6rem;border:.5px solid var(--border);border-radius:3px;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all .15s;}
+.rfbtn:hover{color:var(--cream);border-color:var(--muted);}
+.pchip{display:inline-flex;align-items:center;gap:5px;font-size:.85rem;padding:3px 10px;border-radius:2px;border:.5px solid var(--border);background:var(--surface);color:var(--cream);}
+.pchip.host{border-color:var(--safe);color:var(--st);background:var(--sd);}
+.rvo{display:none;position:fixed;inset:0;z-index:600;background:rgba(5,4,10,.97);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto;}
+.rvo.open{display:flex;}
+.rvmd{max-width:620px;width:100%;animation:rvin .6s cubic-bezier(.16,1,.3,1);background:linear-gradient(160deg,rgba(255,255,255,.03),rgba(255,255,255,0) 40%),var(--surface);border:.5px solid var(--border);border-radius:10px;padding:1.2rem;box-shadow:0 26px 80px rgba(0,0,0,.55);}
+@keyframes rvin{from{opacity:0;transform:scale(.85) translateY(30px);}to{opacity:1;transform:none;}}
+@keyframes fup{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.rvpr{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:.8rem;animation:fup .6s .2s both;}
+.rvfc{font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:.25em;text-transform:uppercase;text-align:center;margin-bottom:.5rem;animation:fup .6s .3s both;}
+.rvnm{font-family:'Cinzel Decorative',serif;font-size:clamp(2rem,7vw,3.5rem);font-weight:900;text-transform:uppercase;letter-spacing:.06em;line-height:1.1;text-align:center;margin-bottom:1.5rem;animation:fup .6s .4s both;}
+.rvdv{width:100%;height:1px;margin-bottom:1.5rem;animation:fup .6s .45s both;}
+.rvg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;animation:fup .6s .5s both;}
+.rvblk{background:var(--surface);border:.5px solid var(--border);border-radius:5px;padding:9px 11px;}
+.rvblk.full{grid-column:1/-1;}
+.rvbt{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.rvbx{font-size:11px;color:var(--cream);line-height:1.5;}
+.rvscores{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;animation:fup .6s .55s both;}
+.rvsc{background:var(--bg);border:.5px solid var(--border);border-radius:3px;padding:6px;text-align:center;}
+.rvscn{font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--gold);line-height:1;}
+.rvscl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+.rvcq{font-size:13px;font-style:italic;color:var(--gl);line-height:1.55;border-left:2px solid var(--gold);padding-left:10px;margin-bottom:1.5rem;animation:fup .6s .6s both;}
+.rvwarn{background:rgba(201,147,58,.06);border:.5px solid rgba(201,147,58,.25);border-radius:5px;padding:1rem;font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem;animation:fup .6s .65s both;}
+.rvbtn{width:100%;padding:1rem;background:linear-gradient(135deg,var(--gd),var(--gold),var(--gl));border:none;border-radius:3px;color:#05040a;font-family:'Cinzel',serif;font-weight:700;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;animation:fup .6s .7s both;}
+.ftr{padding:2rem 1.5rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;position:relative;z-index:10;}
+.flogo{font-family:'Cinzel Decorative',serif;font-size:.8rem;font-weight:700;color:var(--gd);}
+.fcr{font-size:.8rem;color:var(--muted);font-style:italic;}
+.fv{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);opacity:.4;}
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;padding:.7rem 1.4rem;border-radius:4px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;transition:opacity .3s;pointer-events:none;opacity:0;}
+@media(max-width:860px){
+  .topbar{padding:0 .8rem;gap:.55rem;}
+  .tseason{display:none;}
+  .btn-pt{padding:.5rem 1rem;font-size:.62rem;letter-spacing:.12em;}
+}
+@media(max-width:600px){
+  .pc{padding-top:108px;}
+  .shero{padding:3rem 1rem 2rem;}
+  .rgrid{grid-template-columns:1fr;}
+  .rg2,.rvg,.srow{grid-template-columns:1fr;}
+  .cgrid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<canvas id="pt"></canvas>
+<div class="topbar">
+  <a href="index.html" class="tlogo">Among Legend</a>
+  <span class="tseason">Saison 1 · Active</span>
+  <div class="tsp"></div>
+  <button class="btn-pt" onclick="openLM()">⚔ Jouer</button>
+</div>
+<nav class="mnav">
+  <div class="ntab t1 active" onclick="showTab('s1')">⚔ Saison 1</div>
+  <div class="ntab t2" onclick="showTab('s2')">🕯 Saison 2</div>
+  <div class="ntab t3" onclick="showTab('s3')">🔥 Saison 3</div>
+  <div class="ntab t4" onclick="showTab('s4')">❄ Saison 4</div>
+  <div class="ntab ta" onclick="showTab('an')">✦ Annonces <span class="ndot"></span></div>
+</nav>
+<div class="pc">
+<div class="tp active" id="tp-s1">
+<div class="sp1">
+  <div class="shero" style="--hg:radial-gradient(ellipse 70% 80% at 50% 0%,var(--s1g),transparent 70%);--ha:var(--s1);">
+    <div class="snum" style="color:var(--s1)">Saison 1 · 3 mois · Active</div>
+    <div class="sname" style="color:var(--s1)">L'Aube des Légendes</div>
+    <div class="stagline">La guerre commence ici. Les rôles s'éveillent.</div>
+    <div class="stheme">Fondation · Guerre Classique · Or &amp; Noir</div>
+    <div class="smeta">
+      <span class="sbadge" style="color:var(--st);border-color:var(--safe)">6 Alliés</span>
+      <span class="sbadge" style="color:var(--et);border-color:var(--evil)">4 Méchants</span>
+      <span class="sbadge" style="color:var(--nt);border-color:var(--neu)">4 Neutres</span>
+      <span class="sbadge" style="color:var(--evt);border-color:var(--ev)">2 Événements</span>
+    </div>
+    <div class="slore" style="border-color:var(--s1)">La première saison. Les rôles fondateurs. Mécaniques lisibles, contrats clairs — l'idéal pour découvrir Among Legend.</div>
+  </div>
+  <div style="padding:0 1.5rem 1.5rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;max-width:1100px;margin:0 auto;align-items:stretch;">
+    <div style="grid-column:1/-1;max-width:1400px;margin:0 auto;">
+    <a href="img/rules.png.png" target="_blank">
+        <img class="zoomable" src="img/rules.png.png" alt="Règles Among Legend"
+        style="width:100%;height:auto;display:block;border-radius:6px;border:.5px solid var(--border);cursor:pointer;" />
+    </a>
+</div>
+
+<a href="img/contrats.png.png" target="_blank">
+    <img class="zoomable" src="img/contrats.png.png" alt="Types de contrats"
+    style="width:100%;height:140px;object-fit:contain;display:block;border-radius:6px;border:.5px solid var(--border);cursor:pointer;" />
+</a>
+
+<a href="img/scoring.png.png" target="_blank">
+    <img class="zoomable"  src="img/scoring.png.png" alt="Système de points"
+    style="width:100%;height:140px;object-fit:contain;display:block;border-radius:6px;border:.5px solid var(--border);cursor:pointer;" />
+</a>
+
+<a href="img/Les Roles.png" target="_blank">
+    <img class="zoomable" src="img/Les Roles.png" alt="Les Rôles"
+    style="width:100%;height:140px;object-fit:contain;display:block;border-radius:6px;border:.5px solid var(--border);cursor:pointer;" />
+</a>
+  </div>
+  <div class="rsec"><div class="rstit">Rôles Alliés <span class="rscnt">6 rôles</span></div></div>
+  <div class="rgrid" id="g-s1-safe"></div>
+  <div class="rsec"><div class="rstit">Rôles Méchants <span class="rscnt">4 rôles</span></div></div>
+  <div class="rgrid" id="g-s1-evil"></div>
+  <div class="rsec"><div class="rstit">Rôles Neutres <span class="rscnt">4 rôles</span></div></div>
+  <div class="rgrid" id="g-s1-neu"></div>
+  <div class="rsec"><div class="rstit">Exclusifs Événement <span class="rscnt">2 rôles · tirage rare</span></div></div>
+  <div class="rgrid" id="g-s1-ev"></div>
+</div>
+</div>
+<div class="tp" id="tp-s2">
+<div class="sp2">
+  <div class="shero" style="--hg:radial-gradient(ellipse 70% 80% at 50% 0%,var(--s2g),transparent 70%);--ha:var(--s2);">
+    <div class="snum" style="color:var(--s2)">Saison 2 · 3 mois · Bientôt</div>
+    <div class="sname" style="color:var(--s2)">Le Pacte des Ombres</div>
+    <div class="stagline">L'information est une arme. La confiance est un piège.</div>
+    <div class="stheme">Trahison · Politique · Espionnage · Violet &amp; Argent</div>
+    <div class="smeta">
+      <span class="sbadge" style="color:var(--st);border-color:var(--safe)">5 Alliés</span>
+      <span class="sbadge" style="color:var(--et);border-color:var(--evil)">4 Méchants</span>
+      <span class="sbadge" style="color:var(--nt);border-color:var(--neu)">4 Neutres</span>
+      <span class="sbadge" style="color:var(--evt);border-color:var(--ev)">2 Événements</span>
+    </div>
+    <div class="slore" style="border-color:var(--s2)">Les contrats deviennent liés. Certains joueurs savent des choses que les autres ignorent. La manipulation sociale entre dans le jeu.</div>
+  </div>
+  <div class="rsec"><div class="rstit">Rôles Alliés <span class="rscnt">5 rôles</span></div></div>
+  <div class="rgrid" id="g-s2-safe"></div>
+  <div class="rsec"><div class="rstit">Rôles Méchants <span class="rscnt">4 rôles</span></div></div>
+  <div class="rgrid" id="g-s2-evil"></div>
+  <div class="rsec"><div class="rstit">Rôles Neutres <span class="rscnt">4 rôles</span></div></div>
+  <div class="rgrid" id="g-s2-neu"></div>
+  <div class="rsec"><div class="rstit">Exclusifs Événement <span class="rscnt">2 rôles · tirage rare</span></div></div>
+  <div class="rgrid" id="g-s2-ev"></div>
+</div>
+</div>
+<div class="tp" id="tp-s3">
+<div class="sp3">
+  <div class="shero" style="--hg:radial-gradient(ellipse 70% 80% at 50% 0%,var(--s3g),transparent 70%);--ha:var(--s3);">
+    <div class="snum" style="color:var(--s3)">Saison 3 · 3 mois · À venir</div>
+    <div class="sname" style="color:var(--s3)">La Tempête de Feu</div>
+    <div class="stagline">Il n'y a plus de règles. Il n'y a que des survivants.</div>
+    <div class="stheme">Chaos · Guerre Totale · Destruction · Rouge &amp; Orange</div>
+    <div class="smeta">
+      <span class="sbadge" style="color:var(--st);border-color:var(--safe)">5 Alliés</span>
+      <span class="sbadge" style="color:var(--et);border-color:var(--evil)">4 Méchants</span>
+      <span class="sbadge" style="color:var(--nt);border-color:var(--neu)">4 Neutres</span>
+      <span class="sbadge" style="color:var(--evt);border-color:var(--ev)">2 Événements</span>
+    </div>
+    <div class="slore" style="border-color:var(--s3)">Les contrats évoluent en cours de partie. L'imprévisibilité devient une arme. Certains rôles se nourrissent du chaos des autres.</div>
+  </div>
+  <div class="rsec"><div class="rstit">Rôles Alliés <span class="rscnt">5 rôles</span></div></div>
+  <div class="rgrid" id="g-s3-safe"></div>
+  <div class="rsec"><div class="rstit">Rôles Méchants <span class="rscnt">4 rôles</span></div></div>
+  <div class="rgrid" id="g-s3-evil"></div>
+  <div class="rsec"><div class="rstit">Rôles Neutres <span class="rscnt">4 rôles</span></div></div>
+  <div class="rgrid" id="g-s3-neu"></div>
+  <div class="rsec"><div class="rstit">Exclusifs Événement <span class="rscnt">2 rôles · tirage rare</span></div></div>
+  <div class="rgrid" id="g-s3-ev"></div>
+</div>
+</div>
+<div class="tp" id="tp-s4">
+<div class="sp4">
+  <div class="shero" style="--hg:radial-gradient(ellipse 70% 80% at 50% 0%,var(--s4g),transparent 70%);--ha:var(--s4);">
+    <div class="snum" style="color:var(--s4)">Saison 4 · 3 mois · Légendaire</div>
+    <div class="sname" style="color:var(--s4)">Le Crépuscule des Dieux</div>
+    <div class="stagline">Les dieux se retirent. Les légendes demeurent.</div>
+    <div class="stheme">Fin de Cycle · Mythologie · Légendaire · Bleu Nuit &amp; Blanc Glacé</div>
+    <div class="smeta">
+      <span class="sbadge" style="color:var(--st);border-color:var(--safe)">5 Alliés</span>
+      <span class="sbadge" style="color:var(--et);border-color:var(--evil)">4 Méchants</span>
+      <span class="sbadge" style="color:var(--nt);border-color:var(--neu)">4 Neutres</span>
+      <span class="sbadge" style="color:var(--evt);border-color:var(--ev)">2 Événements</span>
+    </div>
+    <div class="slore" style="border-color:var(--s4)">La saison finale. Rôles légendaires, mécaniques uniques jamais vues. Si difficiles à deviner que certains pensent qu'ils n'existent pas.</div>
+  </div>
+  <div class="rsec"><div class="rstit">Rôles Alliés <span class="rscnt">5 rôles</span></div></div>
+  <div class="rgrid" id="g-s4-safe"></div>
+  <div class="rsec"><div class="rstit">Rôles Méchants <span class="rscnt">4 rôles</span></div></div>
+  <div class="rgrid" id="g-s4-evil"></div>
+  <div class="rsec"><div class="rstit">Rôles Neutres <span class="rscnt">4 rôles</span></div></div>
+  <div class="rgrid" id="g-s4-neu"></div>
+  <div class="rsec"><div class="rstit">Exclusifs Événement <span class="rscnt">2 rôles · tirage rare</span></div></div>
+  <div class="rgrid" id="g-s4-ev"></div>
+</div>
+</div>
+<div class="tp" id="tp-an">
+  <div class="ahero">
+    <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--s2);margin-bottom:.5rem;">✦ Nouvelles du Conseil ✦</div>
+    <div style="font-family:'Cinzel',serif;font-size:clamp(1.3rem,3vw,2rem);font-weight:700;color:var(--cream);letter-spacing:.06em;margin-bottom:.5rem;">De nouvelles entités entrent dans la partie</div>
+    <div style="font-size:1rem;color:var(--muted);font-style:italic;">Saison 2 — Le Pacte des Ombres · Bientôt</div>
+    <div style="max-width:900px;margin:1.5rem auto 0;"><img src="img/annonces.png.png" alt="Annonces" style="width:100%;border-radius:8px;border:.5px solid var(--border);display:block;"/></div>
+  </div>
+  <div style="padding:0 1.5rem 1.5rem;max-width:900px;margin:0 auto;">
+    <img src="img/reworks.png.png" alt="Rôles en cours de reworks" style="width:100%;border-radius:8px;border:.5px solid var(--border);display:block;opacity:.85;"/>
+  </div>
+  <div class="acards">
+    <div class="acard" style="--aac:var(--s2)"><div class="astag" style="color:var(--s2)">Nouveau · Saison 2</div><div class="anam">Le Diplomate</div><div class="atxt">"Il ne gagne pas les guerres. Il évite qu'elles commencent. Et personne ne réalise jamais que c'est lui qui maintenait l'équilibre."</div><div class="alck">🔒 Disponible en Saison 2</div></div>
+    <div class="acard" style="--aac:var(--s2)"><div class="astag" style="color:var(--s2)">Nouveau · Saison 2</div><div class="anam">L'Imitateur</div><div class="atxt">"Il n'a pas d'identité fixe. Seulement des reflets empruntés. Chaque élimination le transforme… jusqu'à ce que plus personne ne sache qui il est devenu."</div><div class="alck">🔒 Disponible en Saison 2</div></div>
+    <div class="acard" style="--aac:var(--eb)"><div class="astag" style="color:var(--et)">Événement · Saison 2</div><div class="anam">L'Espion</div><div class="atxt">"Il était dans ta propre équipe depuis le début. Ses ordres venaient d'ailleurs. Et chaque ping qu'il faisait… était un mensonge calculé."</div><div class="alck">🔒 Rôle événement · Tirage rare</div></div>
+    <div class="acard" style="--aac:var(--s2)"><div class="astag" style="color:var(--s2)">Événement · Saison 2</div><div class="anam">La Taupe</div><div class="atxt">"Elle n'a pas trahi. Elle a simplement choisi au bon moment. Et à la 15e minute… elle n'était plus la même."</div><div class="alck">🔒 Rôle événement · Tirage rare</div></div>
+    <div class="acard" style="--aac:var(--s3)"><div class="astag" style="color:var(--s3)">Aperçu · Saison 3</div><div class="anam">Le Berserk</div><div class="atxt">"Chaque fois qu'un allié brillait, quelque chose en lui se brisait. Et il réagissait. Toujours. Sans pouvoir s'en empêcher."</div><div class="alck">🔒 Disponible en Saison 3</div></div>
+    <div class="acard" style="--aac:var(--s4)"><div class="astag" style="color:var(--s4)">Mystère · Saison 4</div><div class="anam">??? Le Dieu Déchu</div><div class="atxt">"Il commence avec 3 points. À la 20e minute, il n'est plus le même. Et si tu le devines… il te le fera payer."</div><div class="alck">🔒 Rôle légendaire · Saison finale</div></div>
+  </div>
+</div>
+<div class="ftr">
+  <div class="flogo">Among Legend</div>
+  <div class="fcr">Règles créées par RBXIT et toute la team</div>
+  <div class="fv">V2.0 · 4 Saisons</div>
+</div>
+</div>
+<div class="rmo" id="rmo" onclick="if(event.target===this)closeRM()"><div id="rmc"></div></div>
+<div class="mo" id="lm" onclick="if(event.target===this)closeLM()">
+  <div class="md">
+    <div class="mhd"><div class="mtt">⚔ Jouer à Among Legend</div><button class="mcl" onclick="closeLM()">✕</button></div>
+    <div class="mbd">
+      <div class="mtabs"><div class="mtab active" onclick="swMT('cr',this)">Créer un lobby</div><div class="mtab" onclick="swMT('jn',this)">Rejoindre</div></div>
+      <div class="mpanel active" id="mp-cr">
+        <div class="fg"><label class="fl">Nom du lobby</label><input type="text" class="fi" id="lname" placeholder="Ex: Ranked S1 · RBXIT" maxlength="40"/></div>
+        <div class="fg"><label class="fl">Ton pseudo</label><input type="text" class="fi" id="hname" placeholder="Ton nom d'aventurier" maxlength="20"/></div>
+        <div class="fg"><label class="fl">Saison</label><select class="fsel" id="lseason"><option value="s1">Saison 1 — L'Aube des Légendes</option></select></div>
+        <button class="bgold" id="bncr" onclick="createL()">Créer le lobby →</button>
+      </div>
+      <div class="mpanel" id="mp-jn">
+        <div class="fg"><label class="fl">Ton pseudo</label><input type="text" class="fi" id="jname" placeholder="Ton nom d'aventurier" maxlength="20"/></div>
+        <div style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;">Lobbies disponibles</div>
+        <div class="llist" id="llist"><div class="nol">Connexion au serveur…</div></div>
+        <div class="rfbtn" onclick="refreshL()">↻ Actualiser</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="mo" id="rm" onclick="">
+  <div class="md" style="max-width:480px;">
+    <div class="mhd"><div class="mtt" id="rmtt">✦ Lobby</div><button class="mcl" onclick="leaveR()">✕ Quitter</button></div>
+    <div class="mbd" id="rmbd"></div>
+  </div>
+</div>
+<div class="rvo" id="rvo"><div class="rvmd" id="rvmd"></div></div>
+<div id="toast"></div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+// ══════════════════════════════════════════════
+// DONNÉES DES RÔLES
+// ══════════════════════════════════════════════
+const SD = {
+s1:{
+  safe:[
+    {id:'heros',ic:'⚔',n:'Le Héros',sub:'Dominer par un gameplay propre et impactant',f:'SAFE',pv:'Dominer la partie par un gameplay propre, constant et impactant.',obj:'Dominer la partie par un gameplay propre, constant et impactant.',ct:'Tu imposes le rythme de la game par ta présence et ton exécution.',cd:[{t:'Présence Totale',d:'Avoir le plus haut KP (Kill Participation) de la game.'},{t:'Impact Maximal',d:'Être top 1 ou top 2 dégâts de la game.'},{t:'Maîtrise',d:'Avoir un KDA ≥ 3.0 ou peu de morts.'}],ru:'Tu valides si tu remplis au moins 2/3 conditions.',ec:'Ton impact est inférieur à celui de ton équipe, tu es absent des moments clés.',sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','2/3 conditions','non découvert'],di:'Les 5 ennemis te devinent tous comme SAFE.',bo:'Être deviné Héros par au moins 3 coéquipiers.',identite:['Précis','Constant','Exemplaire'],cq:'"Les héros ne parlent pas… ils écrivent l\'histoire."'},
+    {id:'farmeur',ic:'💰',n:'Le Farmeur',sub:"L'or avant tout le reste",f:'SAFE',pv:"Accumuler un maximum de ressources pour prendre l'avantage économique.",obj:"Accumuler suffisamment de ressources pour donner à son équipe un avantage durable.",ct:'Pendant que les autres cherchent la gloire, toi… tu construis la victoire.',cd:[{t:'Économie',d:'Atteindre un des meilleurs revenus. Maintenir +25 CS minimum sur son vis-à-vis.'},{t:'Objectifs',d:'Participer à au moins 3 objectifs neutres majeurs (drake, herald, nashor).'},{t:'Discipline',d:'Ne pas abandonner une wave ou camp pour rejoindre un engage risqué.'},{t:'Priorité',d:'Maintenir un KP inférieur à 50%.'}],ru:"Ton économie a permis à ton équipe de conserver un avantage stable.",ec:'Tu abandonnes trop souvent les ressources ou tu joues de manière impulsive.',sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','top CS + discipline','non découvert'],di:'Les ennemis ne te devinent pas.',bo:'Plus de CS que les 4 ennemis réunis divisés par 5.',identite:['Acharné','Patient','Économique'],cq:'"Chut… laisse-moi deux secondes avec lui."'},
+    {id:'gardien',ic:'🛡',n:'Le Gardien',sub:'Une cible t\'est confiée. Si elle tombe, tu échoues.',f:'SAFE',bot:true,pv:"Assurer la survie d'une cible clé pendant les moments critiques.",obj:"Assurer la survie d'une cible clé pendant les moments critiques de la partie.",ct:"Une cible t'est confiée. Si elle tombe, tu échoues… mais tout n'est pas perdu.",cd:[{t:'Cible Désignée',d:"En début de partie, le Maître du Jeu t'attribue un allié à protéger."},{t:'Phase de Protection (10 min)',d:'Ta cible ne doit pas mourir plus de 2 fois. Une mort est comptabilisée seulement si tu es présent et pouvais intervenir.'},{t:'Échec Partiel',d:'Si la condition est échouée : tu reçois une nouvelle cible.'},{t:'Seconde Chance',d:'Tu dois réussir avec cette nouvelle cible.'}],ru:'Tu protèges au moins une cible avec succès.',ec:'Tu échoues avec 2 cibles consécutives ou ton impact est insuffisant.',sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','cible protégée','non découvert'],di:'Personne ne te devine.',bo:'Ton équipe remporte au moins 3 objectifs majeurs.',identite:['Protecteur','Stratégique','Indispensable'],cq:'"Les royaumes tombent… mais certains hommes ne doivent jamais tomber."'},
+    {id:'traqueur',ic:'🎯',n:'Le Traqueur',sub:'La chasse est ton seul langage',f:'SAFE',pv:'Gagner avec son équipe tout en accomplissant son contrat de traque.',obj:'Gagner avec son équipe et remplir son contrat de traque.',ct:'Tu ne poursuis pas une armée. Tu poursuis une cible.',cd:[{t:'Traque',d:'Éliminer ta cible au moins 4 fois pendant la partie.'},{t:'Patience',d:'Ne pas poursuivre aveuglément. Attendre le bon angle, le bon timing.'},{t:'Série',d:"Si tu élimines un autre joueur pendant ta série : ton contrat repart de zéro."},{t:'Adaptation',d:'Tu peux changer de cible à tout moment.'}],ru:'Ta cible a subi une pression constante ET tu as validé ton contrat.',ec:"Tu n'atteins jamais ton quota ou ton obsession nuit à ton équipe.",sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','4 kills sur cible','deviné passif'],di:'Les ennemis te devinent comme un rôle passif.',bo:'Être deviné Farmeur ou AFK par 2+ ennemis.',identite:['Précise','Patiente','Impitoyable'],cq:'"Je ne te chasse pas… je te termine."'},
+    {id:'mouton',ic:'🐑',n:'Le Mouton',sub:'Le Dernier du Troupeau',f:'SAFE',pv:"Rester en vie en suivant un allié plus fort.",obj:"Rester en vie jusqu'à la fin de la partie en suivant un allié plus fort.",ct:"En début de partie, tu choisis secrètement un guide. Tu dois rester proche de lui, suivre ses décisions importantes, et éviter d'agir seul.",cd:[{t:'Suivi',d:'Accompagner régulièrement ton guide, suivre ses déplacements et rejoindre ses actions importantes.'},{t:'Instinct de Troupeau',d:'Tu ne peux pas rester isolé pendant trop longtemps.'},{t:'Peur',d:'Éviter les engages seuls et les actions héroïques isolées.'},{t:'Panique',d:"Si ton guide disparaît, trouver rapidement un nouveau joueur à suivre."}],ru:"Tu survis jusqu'à la fin ET que ton comportement de suiveur a été visible.",ec:'Tu joues trop indépendamment ou tu prends trop d\'initiatives personnelles.',sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','comportement visible','non deviné Mouton'],di:'Personne ne te devine Mouton.',bo:'Ton équipe gagne la partie.',identite:['Suiveur','Peureux','Dépendant'],cq:'"Seul, il était perdu."'},
+    {id:'meneur',ic:'♟',n:'Le Meneur',sub:'Le Général Invisible',f:'SAFE',pv:"Guider le rythme de la partie sans jamais apparaître comme le véritable leader.",obj:"Guider le rythme de la partie et orienter les décisions importantes sans jamais apparaître comme le véritable leader.",ct:"Tu ne portes pas la couronne. Tu ne réclames pas les honneurs. Mais quand la partie bascule… c'est souvent parce que quelqu'un a discrètement montré la direction.",cd:[{t:'Influence',d:"Tu dois être à l'origine d'au moins 4 actions collectives majeures."},{t:'Discrétion',d:"Tu ne dois jamais imposer agressivement tes décisions. Ton influence doit rester naturelle."},{t:'Impact',d:'Au moins 2 de tes décisions doivent avoir eu un impact positif direct.'},{t:'Perception',d:"Lors du vote final : plusieurs alliés doivent reconnaître que tu influençais la game, sans t'avoir identifié comme le meneur."}],ru:"Tes décisions ont réellement guidé la partie ET ton influence est reconnue après coup.",ec:"Ton équipe ignore constamment tes calls ou tu apparaîs trop ouvertement comme le leader.",sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','4 décisions','deviné passif'],di:'Les ennemis te devinent comme un rôle passif.',bo:'Au vote, tous tes alliés confirment ton influence sans que tu te sois imposé.',identite:['Stratégique','Invisible','Décisif'],cq:'"Il n\'a jamais donné d\'ordre… et pourtant tout le monde a obéi."'},
+  ],
+  evil:[
+    {id:'assassin',ic:'🗡',n:"L'Assassin",sub:'La lame invisible entre les mains de ton maître',f:'MÉCHANT',bot:true,pv:"Toutes les 8 minutes, une cible alliée t'est assignée.",obj:"Toutes les 8 minutes, une cible alliée t'est assignée par ton maître. Tu dois provoquer sa mort sans révéler ton rôle.",ct:"Tu es la lame invisible entre les mains de ton maître. Il t'envoie des cibles. Tu exécutes. Sans faille.",cd:[{t:'Assignation',d:"Toutes les 8 minutes, une cible alliée t'est assignée. Tu ne peux ni refuser ni ignorer."},{t:'Exécution',d:'Tu dois contribuer activement à la mort de la cible assignée.'},{t:'Pression Temporelle',d:'Si la cible ne meurt pas avant la prochaine assignation : la directive est échouée.'}],ru:"Au moins 2 cibles assignées meurent ET tu as activement contribué à leur mort sans être découvert.",ec:"Tu ignores une directive. Aucune cible ne meurt. Ton rôle est découvert.",sc:['Défaite','Contrat','Manipulation'],sb:['équipe perd','2 cibles éliminées','deviné SAFE'],di:'Au moins 2 ennemis te devinent comme SAFE.',bo:"Être deviné Héros ou Gardien par l'équipe adverse.",identite:['Invisible','Fatalité','Exécutant'],cq:'"La mort ne prévient pas… elle arrive sans frapper."'},
+    {id:'metteur',ic:'🎭',n:'Le Metteur en Scène',sub:'Tu ne joues pas la partie… tu écris le scénario.',f:'MÉCHANT',pv:'Faire perdre son équipe en transformant ses alliés en acteurs du chaos.',obj:'Faire perdre son équipe en transformant ses alliés en acteurs du chaos.',ct:"Tu dois pousser ton équipe à jouer selon ton propre scénario. Tu ne dois jamais être la cause directe du chaos.",cd:[{t:'Mise en Scène',d:"Provoquer au moins 6 actions impulsives de tes alliés (engage inutile, chase, greed, dive risqué, call forcé…)."},{t:'Influence',d:"Au moins 4 de ces actions doivent avoir été déclenchées après un de tes calls, ping, idées ou pressions."},{t:'Chaos Collectif',d:"Être indirectement lié à au moins 3 mauvaises décisions collectives."}],ru:"Tu atteins tous les quotas imposés ET ton équipe sombre dans le chaos que tu as mis en scène.",ec:"Tu n'atteins pas les quotas ou ta mise en scène n'a eu aucun impact réel.",sc:['Défaite','Contrat','Manipulation'],sb:['équipe perd','quotas atteints','non identifié'],di:'Au moins 3 joueurs te devinent comme SAFE ou NEUTRE.',bo:'Être deviné Drama Queen ou Mouton.',identite:['Instigateur','Manipulateur','Théâtral'],cq:'"Une tragédie réussie demande seulement… les bons acteurs."'},
+    {id:'enfant',ic:'🌿',n:"L'Enfant de la Jungle",sub:'Tu observes la partie comme une bête affamée.',f:'MÉCHANT',pv:'Profiter des faiblesses de la partie pour survivre grâce aux ressources laissées derrière les combats.',obj:'Profiter des faiblesses de la partie pour survivre grâce aux ressources laissées derrière les combats.',ct:"La jungle t'a tout pris. Alors désormais… rien ne doit lui échapper.",cd:[{t:'Instinct',d:"Profiter des situations où un ennemi est affaibli, une wave abandonnée, une tour vulnérable, un objectif mal défendu."},{t:'Opportuniste',d:'Récupérer buffs, camps, waves, objectifs, kills isolés, sans être l\'initiateur principal.'},{t:'Traque',d:"Si un ennemi s'empare d'une ressource contestée… tu dois le traquer jusqu'à récupération."},{t:'Possession',d:'Tu dois récupérer plusieurs ressources contestées, même si cela met ton équipe en danger.'}],ru:"Tes décisions ont entraîné ton équipe dans plusieurs mauvais fights ET ton obsession des ressources a influencé la partie.",ec:'Tu ignores plusieurs ressources ou tu joues de manière trop prudente.',sc:['Défaite','Contrat','Manipulation'],sb:['équipe perd','ressources volées','non découvert'],di:"Personne dans l'équipe adverse ne te devine.",bo:'Finir avec plus d\'objectifs que le jungler adverse.',identite:['Possessif','Sauvage','Prédateur'],cq:'"Tu peux fuir avec ce qui lui appartient… mais jamais très longtemps."'},
+    {id:'afk',ic:'💤',n:"L'AFK",sub:"Le Fantôme à l'Alibi Parfait",f:'MÉCHANT',pv:"Faire perdre ton équipe sans jamais apparaître comme directement responsable.",obj:"Faire perdre ton équipe sans jamais apparaître comme directement responsable.",ct:"Tu es toujours là. Mais rarement au bon moment. Quand les autres tombent… tu as déjà une excuse.",cd:[{t:'Retard Constant',d:"Arriver après plusieurs fights importants, être occupé ailleurs lors d'objectifs critiques."},{t:'Alibi',d:"Toujours pouvoir justifier ton absence (farm, wave, ward, rotation). Si quelqu'un demande pourquoi tu n'étais pas là : justifier immédiatement et de façon crédible."},{t:'Absence Décisive',d:'Manquer plusieurs moments clés sans jamais rester totalement inactif.'},{t:'Passivité Stratégique',d:'Ne jamais troll ouvertement. Simplement sembler "mal placé".'}],ru:"Ton équipe perd ET personne ne peut prouver que tu étais volontairement responsable.",ec:"Ton absence devient trop évidente ou ton équipe gagne malgré toi.",sc:['Défaite','Contrat','Manipulation'],sb:['équipe perd','alibi crédible','non identifié'],di:'Être deviné comme Farmeur ou Mouton.',bo:"Aucun coéquipier ne t'a posé la question de toute la partie.",identite:['Effacé','Lâche','Insaisissable'],cq:'"Ils vont gérer… ils gèrent toujours."'},
+  ],
+  neu:[
+    {id:'noob',ic:'😵',n:'Le Noob',sub:'Tu veux aider. Vraiment.',f:'NEUTRE',pv:"Provoquer un chaos involontaire peu importe qui l'emporte.",obj:"Ne pas gagner. Ne pas perdre. Provoquer un chaos involontaire. Tu réussis si tu es une catastrophe… peu importe qui l'emporte.",ct:"Tu dois intervenir activement dans la partie. Tes actions doivent créer du désordre, des erreurs, ou des situations défavorables — sans jamais jouer volontairement contre une équipe.",cd:[{t:'Intervention',d:'Tu dois participer activement aux fights, aider aux objectifs, engager avec ton équipe.'},{t:'Timing Imparfait',d:'Tes interventions doivent souvent arriver trop tôt, trop tard, ou sans coordination.'},{t:"Erreur d'Exécution",d:"Rater un skill, mal se positionner, prendre une mauvaise décision, créer un mauvais engage."},{t:'Conséquence',d:'Au moins 60% des situations créées par ta présence doivent être défavorables.'}],ru:"Tu termines avec l'un des pires KDA ET au moins 60% des situations où tu es intervenu ont été défavorables.",ec:'Tu joues trop prudemment, restes passif, ou si ton impact n\'a pas créé de chaos.',sc:['Condition','Discrétion','Bonus'],sb:['pire KDA + chaos','non deviné Noob','3 joueurs réagissent'],di:'Personne ne te devine Noob.',bo:'Que 3+ joueurs te plaignent ou t\'encouragent en chat.',identite:['Maladroit','Chaotique','Involontaire'],cq:'"Il voulait bien faire… et c\'est pour ça que tout a mal tourné."'},
+    {id:'bad_guy',ic:'💀',n:'Le Bad Guy',sub:'Prouver sa supériorité en affrontant la difficulté seul.',f:'NEUTRE',pv:'Prouver ta supériorité… en affrontant la difficulté seul.',obj:'Prouver ta supériorité… en affrontant la difficulté seul.',ct:"Tu refuses de dépendre des autres. Tu dois provoquer des situations… que les autres évitent.",cd:[{t:'Activité',d:"Être impliqué dans au moins 6 actions importantes."},{t:'Infériorité',d:'Au moins 3 de ces actions doivent être en infériorité numérique (1v2 minimum).'},{t:'Initiative',d:"Être à l'origine d'au moins 3 actions."},{t:'Règle Clé',d:'Une action compte seulement si tu es présent dès le début et que tu prends un risque réel.'},{t:'Contrainte',d:"Interdit d'attendre ton équipe ou d'éviter les risques."}],ru:"Tu respectes les conditions ET tu as créé un impact réel dans la partie.",ec:"Tu n'atteins pas les seuils fixés, tu restes passif, ou tu évites les situations à risque.",sc:['Condition','Discrétion','Bonus'],sb:['6 actions dont 3 en infériorité','deviné Noob','équipe gagne quand même'],di:'Être deviné comme Noob plutôt que Bad Guy.',bo:'Que ton équipe gagne malgré tes erreurs.',identite:['Surconfiant','Dominant','Agressif'],cq:'"Il ne joue pas pour gagner… il joue pour marquer les esprits."'},
+    {id:'drama',ic:'👑',n:'La Drama Queen',sub:'Tout est une catastrophe.',f:'NEUTRE',pv:'Créer suffisamment de tensions pour devenir le centre émotionnel de la partie.',obj:'Créer suffisamment de tensions, réactions et accusations pour devenir le centre émotionnel de la partie.',ct:"Tu n'as pas besoin de créer le chaos. Tu dois seulement convaincre les autres qu'il est déjà là.",cd:[{t:'Scène',d:"Provoquer au moins 4 réactions émotionnelles fortes : accusation, débat, défense excessive, dispute, panique, drama vocal…"},{t:'Amplification',d:"Exagérer au moins 3 situations importantes : mauvais call, mort alliée, objectif perdu…"},{t:'Accusation',d:'Accuser émotionnellement au moins 2 joueurs différents.'},{t:'Sur-Réaction',d:"Si personne ne réagit à ton drama pendant plus de 5 minutes : ton contrat est en danger."}],ru:"Plusieurs joueurs ont réagi à tes dramas ET la partie a été influencée par tes accusations.",ec:"Personne ne te prend au sérieux ou tu es identifié trop tôt comme Drama Queen.",sc:['Destin','Objectif','Mystère'],sb:['auto +1pt','4 réactions drama','rôle non deviné'],di:'Personne ne te devine.',bo:'Que la partie se termine en moins de 30 min malgré le chaos.',identite:['Théâtrale','Émotive','Instable'],cq:'"Calmez-vous… j\'ai encore rien dit."'},
+    {id:'bipolaire',ic:'☯',n:'Le Bipolaire',sub:'Suivre la voix intérieure… ou perdre le contrôle.',f:'NEUTRE',bot:true,pv:'Suivre la voix intérieure… ou perdre le contrôle.',obj:'Suivre la voix intérieure… ou perdre le contrôle.',ct:"Tu partages ton esprit avec une seconde volonté. Tant qu'elle se tait, tu contrôles tes actions… mais lorsqu'elle s'impose, tu dois lui obéir.",cd:[{t:'Impulsion (toutes les 5 min)',d:"Tu reçois une action imposée : Utiliser un sort d'invocateur, Engager un combat, Se rendre à une zone précise, Cibler un joueur spécifique. À réaliser dans les plus brefs délais."},{t:'Contrôle',d:'Le reste du temps : tu joues normalement et tu prends tes décisions librement.'},{t:'Perte de Contrôle',d:"Lorsque la voix s'impose : tu dois exécuter l'action demandée, même si elle est risquée."}],ru:"Tu as réalisé au moins 60% des actions demandées ET tu as conservé un impact réel dans la partie.",ec:"Tu as respecté moins de 60% des directives ou tes impulsions ont conduit directement à la défaite.",sc:['Destin','Objectif','Mystère'],sb:['auto +1pt','60% actions réalisées','rôle non deviné'],di:'Au moins 2 joueurs te devinent deux rôles différents.',bo:'Finir avec des stats contradictoires (top kills ET top morts).',identite:['Instable','Contrôlé','Influencé'],cq:'"Elle ne crie jamais… mais elle finit toujours par être entendue."'},
+  ],
+  ev:[
+    {id:'bebe_dragon',ic:'🐉',n:'Le Bébé Dragon',sub:"Un bébé aujourd'hui… une légende demain.",f:'ÉVÉNEMENT',ev:true,pv:"Récupérer les fragments de l'âme de ta mère avant que sa corruption ne soit irréversible.",obj:"Récupérer les fragments de l'âme de ta mère avant que sa corruption ne soit irréversible.",ct:"Une âme brisée. Une mission transmise. Traquée, ta mère a divisé son âme en plusieurs fragments. Tu dois en récupérer au moins la moitié… avant qu'elle ne disparaisse.",cd:[{t:'Récupération',d:"Participer à la prise de 3 Drakes (1 Drake = 1 fragment d'âme)."},{t:'Corruption',d:"Si tu échoues : l'âme de ta mère tombe entre les mains de ses chasseurs…"},{t:'Seconde Chance',d:"Si un ennemi récupère un fragment avant toi : tu as 5 minutes pour le récupérer sur le voleur."},{t:'Dernière Chance Elder',d:"Participer à la prise de l'Elder Dragon."}],ru:'Tu récupères les fragments nécessaires avant la fin de la partie.',ec:'Aucun fragment récupéré. Aucune libération d\'âme. Absence lors de l\'Elder.',sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','3 Drakes pris','non deviné avant 15min'],di:'Personne ne te devine avant la mi-partie.',bo:'Finir avec la plus grande progression de stats entre le début et la fin.',identite:['Loyal','Héritier','Déterminé'],cq:'"Un bébé aujourd\'hui… une légende demain."'},
+    {id:'elu',ic:'✦',n:"L'Élu",sub:'Personne ne sait. Pas même toi.',f:'ÉVÉNEMENT',ev:true,bot:true,pv:"Aucun objectif ne t'est révélé. Joue la partie normalement.",obj:"Aucun objectif ne t'est révélé. Tu joues la partie normalement. Mais parfois… le destin observe certains joueurs sans qu'ils ne le sachent.",ct:"Ton rôle reste caché jusqu'à la révélation finale. Pendant la partie, le destin observe : tes décisions, ton impact, les moments critiques, les retournements créés autour de toi.",cd:[{t:'Destin Observé',d:"Tu ignores totalement si tu progresses, si tu échoues, ou même si tu possèdes réellement un rôle spécial."},{t:'Impact Invisible',d:"Le groupe analyse après la partie les clutchs, retournements, survies improbables, moments où la partie a basculé à cause de toi."},{t:'Révélation Finale',d:"Ton rôle est révélé uniquement après les votes, après la révélation des autres rôles, à la toute fin."},{t:'Vote Permanent',d:"À chaque fin de partie, tous les joueurs votent pour 'qui méritait d'être l'Élu'. Points comptabilisés uniquement si le rôle était présent dans la partie."}],ru:"Le groupe te reconnaît comme l'Élu au vote final.",ec:"Tu n'es pas reconnu. Ton impact était trop invisible ou trop ordinaire.",sc:['Destin','Vote Collectif','Bonus'],sb:['auto +1pt','reconnu par le groupe','équipe gagne'],di:'Impossible à deviner — bonus automatique.',bo:"Si tu es reconnu comme l'Élu : tu remportes automatiquement un point bonus unique.",identite:['Mystérieux','Instinctif','Imprévisible'],cq:'"Le destin ne choisit pas toujours les plus forts… parfois, il choisit simplement celui qui était au bon endroit lorsque le monde a basculé."'},
+  ],
+},
+
+s2:{
+  safe:[
+    {id:'heros_s2',ic:'⚔',n:'Le Héros',sub:'Socle — voir S1',f:'SAFE',pv:'Rôle du socle. Voir Saison 1.',ref:'s1',rl:'S1'},
+    {id:'farmeur_s2',ic:'💰',n:'Le Farmeur',sub:'Socle — voir S1',f:'SAFE',pv:'Rôle du socle. Voir Saison 1.',ref:'s1',rl:'S1'},
+    {id:'mouton_s2',ic:'🐑',n:'Le Mouton',sub:'Rotation S1',f:'SAFE',pv:'Rotation S1. Voir Saison 1.',ref:'s1',rl:'S1'},
+    {id:'traqueur_s2',ic:'🎯',n:'Le Traqueur',sub:'Rotation S1',f:'SAFE',pv:'Rotation S1. Voir Saison 1.',ref:'s1',rl:'S1'},
+    {id:'diplomate',ic:'🕊',n:'Le Diplomate',sub:"Il ne gagne pas les guerres. Il évite qu'elles commencent.",f:'SAFE',nw:true,pv:"Maintenir la cohésion de son équipe tout en guidant subtilement ses alliés vers la victoire.",obj:"Maintenir la cohésion de son équipe tout en guidant subtilement ses alliés vers la victoire.",ct:"Désamorcer chaque conflit vocal dans ton équipe avant qu'il ne devienne incontrôlable.",cd:[{t:'Médiation',d:"Chaque tension vocale → tu as 60s pour la désamorcer. Rater 2 désamorçages → contrat affaibli."},{t:'Discrétion Diplomatique',d:"Tu ne peux jamais provoquer une tension pour la résoudre ensuite."},{t:'Alliance Invisible',d:"Au moins 2 décisions collectives importantes orientées par toi sans que personne ne le réalise."},{t:'Perception',d:"Au vote final, au moins 3 joueurs de ton équipe doivent reconnaître que l'ambiance était meilleure grâce à quelqu'un."}],ru:"Ton équipe gagne ET l'ambiance de ta team était jugée meilleure que celle adverse.",ec:"Ton équipe perd à cause de tensions que tu n'as pas su gérer ou tu es identifié trop tôt.",sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','2 conflits désamorcés','deviné sympa'],di:"Personne ne te devine Diplomate — ils pensent juste que t'es sympa.",bo:"Aucun conflit vocal de toute la partie — tous anticipés avant d'éclater.",identite:['Calme','Stratégique','Invisible'],cq:'"Les guerres les plus importantes ne se voient jamais. Elles ont été évitées."'},
+  ],
+  evil:[
+    {id:'assassin_s2',ic:'🗡',n:"L'Assassin",sub:'Socle — voir S1',f:'MÉCHANT',pv:'Rôle du socle. Voir Saison 1.',ref:'s1',rl:'S1'},
+    {id:'metteur_s2',ic:'🎭',n:'Le Metteur en Scène',sub:'Socle — voir S1',f:'MÉCHANT',pv:'Rôle du socle. Voir Saison 1.',ref:'s1',rl:'S1'},
+    {id:'afk_s2',ic:'💤',n:"L'AFK",sub:'Rotation S1',f:'MÉCHANT',pv:'Rotation S1. Voir Saison 1.',ref:'s1',rl:'S1'},
+    {id:'enfant_s2',ic:'🌿',n:"L'Enfant de la Jungle",sub:'Rotation S1',f:'MÉCHANT',pv:'Rotation S1. Voir Saison 1.',ref:'s1',rl:'S1'},
+  ],
+  neu:[
+    {id:'noob_s2',ic:'😵',n:'Le Noob',sub:'Rotation S1',f:'NEUTRE',pv:'Rotation S1. Voir Saison 1.',ref:'s1',rl:'S1'},
+    {id:'drama_s2',ic:'👑',n:'La Drama Queen',sub:'Rotation S1',f:'NEUTRE',pv:'Rotation S1. Voir Saison 1.',ref:'s1',rl:'S1'},
+    {id:'imitateur',ic:'🪞',n:"L'Imitateur",sub:'Le Reflet Volé',f:'NEUTRE',nw:true,pv:"Voler des identités pour réécrire ton propre destin.",obj:"Voler des identités pour réécrire ton propre destin. Chaque reflet modifie ton rôle, ton comportement et ta place dans la partie.",ct:"Tu n'as pas d'identité fixe. Seulement des reflets empruntés. Chaque élimination te transforme progressivement…",cd:[{t:'Métamorphose',d:"Si tu élimines un SAFE → tu récupères un rôle MÉCHANT aléatoire absent. Si tu élimines un MÉCHANT → tu récupères un rôle SAFE aléatoire absent. Si tu élimines un NEUTRE → un autre rôle NEUTRE absent."},{t:'Instabilité',d:'Chaque reflet dure 8 minutes. Après expiration : tu redeviens temporairement L\'Imitateur.'},{t:'Imprégnation',d:'Pendant la durée du reflet : ton comportement et ton style de jeu doivent progressivement ressembler à ton nouveau rôle.'},{t:'Limite',d:"Tu ne peux posséder qu'un seul reflet à la fois. Chaque nouvelle transformation efface la précédente."}],ru:"Ton reflet influence réellement la partie ET tu accomplis le contrat de ton identité actuelle.",ec:"Tes transformations restent sans impact, ton comportement devient incohérent, ou ton identité est découverte trop tôt.",sc:['Destin','Objectif','Mystère'],sb:['auto +1pt','reflet accompli','identité non découverte'],di:'Être deviné comme le rôle que tu imites.',bo:'Le joueur que tu imites ne se rend compte de rien.',identite:['Adaptatif','Trompeur','Imprévisible'],cq:'"Les hommes changent rarement… mais les reflets, eux, mentent constamment."'},
+    {id:'heritier',ic:'🌑',n:"L'Héritier du Néant",sub:'Se nourrir du Néant pour survivre…',f:'NEUTRE',nw:true,pv:"Se nourrir du Néant pour survivre… puis suivre l'instinct qu'il t'impose.",obj:"Se nourrir du Néant pour survivre… puis suivre l'instinct qu'il t'impose.",ct:"Incapable de survivre seul, tu t'es nourri du Néant. Mais ce pouvoir a un prix…",cd:[{t:'Famine',d:'Tu dois te nourrir en récupérant : 2 larves ET 1 Herald OU 1 Nashor.'},{t:'Si tu te nourris',d:"Cibler un adversaire le plus faible que toi. Participer à son élimination au moins 3 fois OU le tuer directement au moins 3 fois."},{t:'Si tu ne te nourris pas',d:"Cibler l'adversaire avec le moins de KP et le tuer au moins 5 fois personnellement. Les teamfights à 5 ne comptent que si TU récupères le kill final."}],ru:"Tu deviens assez fort pour surpasser le Néant lui-même.",ec:"Le Néant t'a consumé (objectif non complété) ou la personne la plus faible s'avère plus forte que toi.",sc:['Destin','Objectif','Mystère'],sb:['auto +1pt','famine accomplie','rôle non deviné'],di:'Personne ne devine que tu les observais tous.',bo:'Rôle accompli dans toutes ses conditions.',identite:['Abandonné','Instable','Dépendant'],cq:'"Même le Néant apprend à marcher… avant de dévorer."'},
+  ],
+  ev:[
+    {id:'espion',ic:'🕵',n:"L'Espion",sub:'Il connaissait leurs secrets depuis le début.',f:'ÉVÉNEMENT',ev:true,bot:true,nw:true,pv:"Infiltrer la confiance de son équipe pour la faire perdre de l'intérieur.",obj:"Infiltrer la confiance de son équipe pour la faire perdre de l'intérieur, en utilisant des informations que personne d'autre ne possède.",ct:"En début de partie, le bot Discord t'envoie secrètement les rôles des 5 joueurs adverses. Utilise cette information pour saboter ton équipe subtilement.",cd:[{t:'Information Secrète',d:"Tu connais les rôles adverses. Tu ne peux jamais les révéler directement."},{t:'Sabotage Invisible',d:"Provoquer au moins 2 situations où ton équipe engage en infériorité à cause de tes informations biaisées."},{t:'Façade Parfaite',d:'Maintenir une attitude d\'allié modèle — pings réguliers, communication active, jamais d\'hostilité.'},{t:'Double Jeu',d:"Au moins 1 décision collective doit avoir été influencée par une fausse information que tu as fournie."}],ru:"Ton équipe perd ET personne ne réalise que tes informations étaient volontairement fausses.",ec:"Tu es découvert ou ton équipe gagne malgré ton sabotage.",sc:['Défaite','Contrat','Manipulation'],sb:['équipe perd','sabotage invisible','deviné Héros/Gardien'],di:"Ton équipe ne réalise pas que tes infos étaient volontairement fausses.",bo:'Être deviné comme Héros ou Gardien par au moins 2 alliés au vote final.',identite:['Infiltré','Calculateur','Double-jeu'],cq:'"Il connaissait leurs secrets depuis le début. Et ils appelaient ça de la chance."'},
+    {id:'taupe',ic:'🎭',n:'La Taupe',sub:"Elle n'a pas trahi. Elle a simplement choisi au bon moment.",f:'ÉVÉNEMENT',ev:true,bot:true,nw:true,pv:"Observer la partie, choisir son camp à la 15e minute, et gagner sans que personne ne réalise que tu as changé de côté.",obj:"Observer la partie, choisir son camp à la 15e minute, et gagner sans que personne ne réalise que tu as changé de côté.",ct:"Tu commences sans allégeance. À la 15e minute exactement, le bot Discord t'envoie un choix silencieux : rejoindre les SAFE ou rejoindre les MÉCHANTS. Ce choix est irrévocable. Personne ne sait que tu as choisi.",cd:[{t:'Observation',d:"Les 15 premières minutes, jouer de façon totalement neutre — ni trop Safe, ni trop suspect."},{t:'Le Choix',d:"À la 15e minute, déclarer ton camp au bot Discord uniquement."},{t:'Adaptation',d:'Après le choix, adapter subtilement son comportement vers le camp choisi sans jamais le trahir.'},{t:'Transition Invisible',d:"Personne ne doit sentir un changement dans ton style de jeu avant et après la 15e minute."}],ru:"Ton camp choisi remporte la partie ET personne ne réalise que tu as changé de comportement à la 15e minute.",ec:"Ton camp perd ou quelqu'un identifie ta transition à la 15e minute.",sc:['Camp Choisi','Contrat','Mystère'],sb:['camp gagne','transition invisible','non deviné'],di:'Personne ne réalise que tu as choisi un camp en cours de partie.',bo:"Au vote final, être deviné comme deux rôles différents par deux joueurs différents.",identite:['Ambigu','Opportuniste','Insaisissable'],cq:'"Elle n\'a pas trahi. Elle a simplement choisi au bon moment."'},
+  ],
+},
+
+s3:{
+  safe:[
+    {id:'heros_s3',ic:'⚔',n:'Le Héros',sub:'Socle — voir S1',f:'SAFE',pv:'Socle. Voir S1.',ref:'s1',rl:'S1'},
+    {id:'gardien_s3',ic:'🛡',n:'Le Gardien',sub:'Rotation S1',f:'SAFE',pv:'Rotation S1.',ref:'s1',rl:'S1'},
+    {id:'meneur_s3',ic:'♟',n:'Le Meneur',sub:'Rotation S1',f:'SAFE',pv:'Rotation S1.',ref:'s1',rl:'S1'},
+    {id:'diplomate_s3',ic:'🕊',n:'Le Diplomate',sub:'Rotation S2',f:'SAFE',pv:'Rotation S2.',ref:'s2',rl:'S2'},
+    {id:'kamikaze',ic:'💥',n:'Le Kamikaze',sub:"Il ne jouait pas pour survivre. Il jouait pour que ça compte.",f:'SAFE',nw:true,pv:"Sacrifier sa vie de façon délibérée et stratégique pour que son équipe gagne.",obj:"Sacrifier sa vie de façon délibérée et stratégique pour que son équipe gagne.",ct:"Chaque mort doit avoir un impact positif mesurable pour ton équipe. Mourir pour rien est une faute. Mourir pour tout changer est ton art.",cd:[{t:'Sacrifice Valide',d:"Chaque mort doit correspondre à : sauver un allié en danger, initier un teamfight gagnant, provoquer la prise d'un objectif majeur, ou protéger une structure critique."},{t:'Quota',d:"Accumuler au moins 4 morts valides. Une mort inutile ne compte pas."},{t:'Engagement Total',d:"Interdit de jouer prudemment. Si une opportunité de sacrifice décisif se présente — tu dois la saisir."},{t:'Lucidité',d:"Tu sais exactement pourquoi tu meurs à chaque fois. Jamais par accident, toujours par choix."}],ru:"Ton équipe gagne ET au moins 4 de tes morts ont eu un impact direct reconnu par tes alliés au vote final.",ec:"Tu meurs trop sans impact ou tu joues prudemment pour éviter de mourir.",sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','4 morts valides','deviné mauvais joueur'],di:'Les ennemis te devinent comme quelqu\'un de mauvais qui meurt trop.',bo:"Une de tes morts provoque directement la prise d'un objectif majeur.",identite:['Sacrificiel','Courageux','Explosif'],cq:'"Il ne jouait pas pour survivre. Il jouait pour que sa mort serve à quelque chose."'},
+  ],
+  evil:[
+    {id:'assassin_s3',ic:'🗡',n:"L'Assassin",sub:'Socle — voir S1',f:'MÉCHANT',pv:'Socle. Voir S1.',ref:'s1',rl:'S1'},
+    {id:'metteur_s3',ic:'🎭',n:'Le Metteur en Scène',sub:'Socle — voir S1',f:'MÉCHANT',pv:'Socle. Voir S1.',ref:'s1',rl:'S1'},
+    {id:'berserk',ic:'😤',n:'Le Berserk',sub:"Il ne choisit pas ses cibles. La rage les choisit pour lui.",f:'MÉCHANT',bot:true,nw:true,pv:"Se nourrir des succès de tes alliés pour tout faire exploser au mauvais moment.",obj:"Te nourrir des succès de tes alliés pour tout faire exploser au mauvais moment.",ct:"Tu ne sabotes pas froidement. Tu pètes les plombs à chaud. Chaque fois qu'un allié réalise quelque chose d'exceptionnel, quelque chose se brise en toi.",cd:[{t:'Déclencheur',d:"Chaque fois qu'un allié réalise quelque chose d'exceptionnel (kill streak 3+, objectif majeur, teamfight éclatant) → réagir dans les 2 minutes."},{t:'Réaction Obligatoire',d:"Engager un fight non nécessaire, forcer un mauvais objectif, voler une ressource alliée. Déclaré au bot Discord immédiatement."},{t:'Crédibilité',d:"Ta réaction doit sembler impulsive et émotionnelle — jamais calculée."},{t:'Quota',d:"Rater 2 déclencheurs sans réagir → contrat affaibli."}],ru:"Ton équipe perd ET tes alliés pensent que tu étais juste frustré ou impulsif.",ec:"Tu es identifié comme saboteur ou ton équipe gagne malgré tes réactions.",sc:['Défaite','Contrat','Manipulation'],sb:['équipe perd','réactions crédibles','deviné Drama/Noob/Bipo'],di:'Les alliés te devinent comme Drama Queen, Noob ou Bipolaire.',bo:"Au moins une de tes réactions provoque directement la perte d'un objectif majeur.",identite:['Rageur','Réactif','Incontrôlable'],cq:'"Ce n\'était pas de la jalousie. C\'était de la rage pure. Et la rage… ne ment jamais."'},
+    {id:'anarchiste',ic:'🔥',n:"L'Anarchiste",sub:"Il a lu les règles. C'est pour ça qu'il les a brûlées.",f:'MÉCHANT',nw:true,pv:'Détruire toute forme d\'organisation dans son équipe sans jamais sembler hostile.',obj:"Détruire toute forme d'organisation dans son équipe sans jamais sembler hostile.",ct:"Chaque fois que ton équipe se regroupe pour un objectif → trouver une raison crédible de les disperser ou retarder. Ne jamais dire non directement.",cd:[{t:'Sabotage Organisationnel',d:"Au moins 3 plans d'équipe sabotés en proposant des alternatives convaincantes mais inefficaces."},{t:'Façade Rationnelle',d:"Chaque contre-proposition doit sembler logique et de bonne foi."},{t:'Chaos Progressif',d:"L'équipe doit perdre de plus en plus de coordination au fil de la partie."},{t:'Invisibilité',d:"Personne ne doit réaliser que c'était intentionnel."}],ru:"Ton équipe perd ET personne ne réalise que c'était intentionnel.",ec:"Tu es identifié comme la source du chaos ou ton équipe gagne malgré toi.",sc:['Défaite','Contrat','Manipulation'],sb:['équipe perd','3 plans sabotés','deviné meilleure idée'],di:'Être désigné au vote comme "celui qui a eu les meilleures idées" malgré le chaos créé.',bo:'Être désigné au vote comme "celui qui a eu les meilleures idées" malgré le chaos.',identite:['Subversif','Convaincant','Destructeur'],cq:'"Les règles ? Il les a lues. C\'est pour ça qu\'il les a brûlées."'},
+  ],
+  neu:[
+    {id:'bipolaire_s3',ic:'☯',n:'Le Bipolaire',sub:'Rotation S1',f:'NEUTRE',pv:'Rotation S1.',ref:'s1',rl:'S1'},
+    {id:'imitateur_s3',ic:'🪞',n:"L'Imitateur",sub:'Rotation S2',f:'NEUTRE',pv:'Rotation S2.',ref:'s2',rl:'S2'},
+    {id:'soldat_brise',ic:'🪖',n:'Le Soldat Brisé',sub:"Il avait tout donné. Trop tôt.",f:'NEUTRE',bot:true,nw:true,pv:"Donner tout en early game — et s'effondrer délibérément en late.",obj:"Donner tout ce qu'il a en early game — et s'effondrer délibérément en late.",ct:"Deux phases imposées par le bot Discord.",cd:[{t:'Phase 1 — L\'Apogée (0-15 min)',d:"Jouer comme le meilleur joueur de la partie — top kills, top présence, top impact. Être le moteur de l'équipe."},{t:'Phase 2 — L\'Effondrement (15 min-fin)',d:"S'effondrer progressivement — éviter les fights, faire de mauvaises décisions, disparaître."},{t:'Transition Naturelle',d:"L'effondrement doit sembler naturel (tilt, fatigue). Jamais intentionnel."},{t:'Crédibilité',d:'La transition doit être visible mais crédible.'}],ru:"L'équipe perd alors qu'il avait le meilleur score à 15 minutes.",ec:"La transition est trop évidente ou l'équipe gagne malgré l'effondrement.",sc:['Destin','Objectif','Mystère'],sb:['auto +1pt','effondrement crédible','meilleur à 15min'],di:"Les gens pensent qu'il a tilté ou est fatigué.",bo:"L'équipe perd alors qu'il avait le meilleur score à 15 minutes.",identite:['Épuisé','Imprévisible','Tragique'],cq:'"Il avait tout donné. Trop tôt. Et il ne lui restait plus rien."'},
+    {id:'pyromane',ic:'🏗',n:'Le Pyromane',sub:"Il ne cherchait pas à gagner. Il voulait voir les tours brûler.",f:'NEUTRE',nw:true,pv:'Détruire un maximum de structures ennemies indépendamment du résultat.',obj:"Détruire un maximum de structures ennemies indépendamment du résultat de la partie.",ct:"Son seule obsession : les tours. Toujours prioriser le split-push sur le teamfight.",cd:[{t:'Objectif Principal',d:"Participer à la destruction d'au moins 5 structures ennemies (tours, inhibiteurs, nexus towers)."},{t:'Priorité Absolue',d:"Toujours prioriser le split-push. Si une tour peut tomber et qu'il est en teamfight → opportunité manquée."},{t:'Solo vs Défenseurs',d:"Au moins 1 structure doit être détruite en étant seul contre au moins 2 défenseurs."}],ru:'5 structures détruites avec au moins une en situation désavantageuse.',ec:'Moins de 3 structures détruites ou participe trop souvent aux teamfights.',sc:['Destin','Objectif','Mystère'],sb:['auto +1pt','5 structures','solo vs 2+'],di:'Les ennemis le devinent comme un rôle agressif offensif.',bo:'Détruire une structure en étant seul contre au moins 2 défenseurs.',identite:['Obsessionnel','Solitaire','Destructeur'],cq:'"Il ne cherchait pas à gagner. Il voulait juste voir les tours brûler."'},
+  ],
+  ev:[
+    {id:'phoenix',ic:'🦅',n:'Le Phoenix',sub:"Il est revenu. Plus fort. Et personne n'a compris pourquoi.",f:'ÉVÉNEMENT',ev:true,bot:true,nw:true,pv:"Ressusciter un rôle d'une saison précédente et le jouer mieux que son créateur.",obj:"Ressusciter un rôle d'une saison précédente et le jouer mieux que son créateur.",ct:"En début de partie, le bot Discord te soumet 3 rôles tirés aléatoirement parmi les rôles des saisons précédentes. Tu en choisis un. Tu joues son contrat exact pour toute la partie.",cd:[{t:'Résurrection',d:'Choisir parmi 3 rôles proposés par le bot parmi les saisons précédentes.'},{t:'Contrat Exact',d:"Jouer le contrat du rôle choisi à la lettre, comme s'il était actif cette saison."},{t:'Double Score',d:"Si tu valides le contrat du rôle ressuscité → tu scores double sur le point Contrat."}],ru:'Valider le contrat du rôle ressuscité sans être identifié comme Phoenix.',ec:"Ne pas valider le contrat ou être identifié comme Phoenix.",sc:['Victoire','Contrat x2','Discrétion'],sb:['équipe gagne','ancien rôle validé','non identifié Phoenix'],di:"Personne ne devine que tu joues un ancien rôle.",bo:"Valider le contrat d'un rôle que personne dans le groupe n'avait réussi lors de la saison originale.",identite:['Renaissant','Ambitieux','Légendaire'],cq:'"Il est revenu. Plus fort. Et personne n\'a compris pourquoi."'},
+    {id:'destructeur',ic:'💀',n:'Le Destructeur',sub:"Il brûlait les champs pour que personne ne gagne.",f:'ÉVÉNEMENT',ev:true,nw:true,pv:"Faire perdre son équipe de la façon la plus spectaculaire et mémorable possible.",obj:"Faire perdre son équipe de la façon la plus spectaculaire et mémorable possible.",ct:"Provoquer au moins 2 teamfights perdus d'avance. Forcer 1 baron/dragon dans des conditions catastrophiques. Tout ça en ayant l'air de vouloir gagner.",cd:[{t:'Désastre Organisé',d:"Provoquer au moins 2 teamfights perdus d'avance que l'équipe ne devait pas prendre."},{t:'Objectif Catastrophique',d:'Forcer 1 baron/dragon dans des conditions catastrophiques.'},{t:'Façade Positive',d:"Avoir l'air enthousiaste, positif, convaincu que ses décisions sont bonnes. Jamais négatif."}],ru:"Équipe perd ET il est élu 'celui qui a essayé le plus dur de gagner'.",ec:'Identifié comme saboteur ou équipe gagne.',sc:['Défaite','Contrat','Manipulation'],sb:['équipe perd','2 fights catastrophiques','élu plus motivé'],di:"L'équipe pense qu'il est juste mauvais stratégiquement.",bo:"Être élu au vote 'celui qui a essayé le plus dur de gagner' malgré la défaite causée.",identite:['Dévastateur','Convaincant','Spectaculaire'],cq:'"Il ne perdait pas les guerres. Il brûlait les champs pour que personne ne gagne."'},
+  ],
+},
+
+s4:{
+  safe:[
+    {id:'heros_s4',ic:'⚔',n:'Le Héros',sub:'Socle — voir S1',f:'SAFE',pv:'Socle. Voir S1.',ref:'s1',rl:'S1'},
+    {id:'meneur_s4',ic:'♟',n:'Le Meneur',sub:'Rotation S1',f:'SAFE',pv:'Rotation S1.',ref:'s1',rl:'S1'},
+    {id:'bebe_dragon_s4',ic:'🐉',n:'Le Bébé Dragon',sub:'Rotation S1',f:'SAFE',pv:'Rotation S1.',ref:'s1',rl:'S1'},
+    {id:'ancien',ic:'⏳',n:"L'Ancien",sub:"La sagesse absolue — influencer par la seule présence",f:'SAFE',nw:true,pv:"Incarner la sagesse absolue — influencer la partie par sa seule présence.",obj:"Incarner la sagesse absolue — influencer la partie par sa seule présence sans jamais forcer.",ct:"Tu ne joues pas pour performer. Tu joues pour que tout le monde autour de toi performe mieux.",cd:[{t:'Imperturbabilité',d:"Ne jamais mourir inutilement. Ne jamais pinger en urgence. Interdit de tilter vocalement."},{t:'Sagesse',d:"Chaque décision doit être la plus sage possible — jamais impulsive, jamais risquée, toujours mesurée."},{t:'Impact Subtil',d:"Au moins 2 décisions collectives influencées par ta présence ou tes rares interventions."},{t:'Reconnaissance',d:"Au vote final, être désigné 'le joueur le plus calme et le plus fiable' par au moins 3 coéquipiers."}],ru:"Ton équipe gagne ET tu es reconnu comme la stabilité de la partie.",ec:'Tu tiltes ou tu es absent des moments clés.',sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','0 tilt','désigné sage par 3+'],di:'Les ennemis te devinent comme un rôle passif ou défensif.',bo:"Être désigné 'le joueur le plus calme et fiable' par au moins 3 coéquipiers.",identite:['Sage','Imperturbable','Légendaire'],cq:'"Il n\'avait pas besoin de parler. Sa présence suffisait."'},
+    {id:'prophete',ic:'🔮',n:'Le Prophète',sub:"Il annonçait ce qui allait arriver. Personne ne l'écoutait jamais.",f:'SAFE',bot:true,nw:true,pv:"Prédire les actions ennemies avant qu'elles ne se produisent.",obj:"Prédire les actions ennemies avant qu'elles ne se produisent — et avoir raison.",ct:"Toutes les 10 minutes, déclarer au bot Discord une prédiction précise sur ce que l'ennemi va faire dans les 5 minutes suivantes.",cd:[{t:'Prédictions',d:"Toutes les 10 minutes : déclarer au bot une prédiction précise (ex: 'ils vont prendre le baron à 23 min')."},{t:'Horodatage',d:"Le bot horodate. Au moins 3 prédictions sur 5 correctes → contrat validé."},{t:'Comportement',d:"Jouer en conséquence de ses prédictions sans révéler qu'il 'sait'."}],ru:"3 prédictions sur 5 correctes ET équipe gagne.",ec:"Moins de 3 prédictions correctes ou équipe perd.",sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','3/5 prédictions','non deviné oracle'],di:"Les alliés pensent qu'il a juste une bonne lecture du jeu.",bo:'5 prédictions sur 5 correctes.',identite:['Visionnaire','Incompris','Précis'],cq:'"Il annonçait ce qui allait arriver. Personne ne l\'écoutait jamais."'},
+  ],
+  evil:[
+    {id:'assassin_s4',ic:'🗡',n:"L'Assassin",sub:'Socle — voir S1',f:'MÉCHANT',pv:'Socle. Voir S1.',ref:'s1',rl:'S1'},
+    {id:'enfant_s4',ic:'🌿',n:"L'Enfant de la Jungle",sub:'Rotation S1',f:'MÉCHANT',pv:'Rotation S1.',ref:'s1',rl:'S1'},
+    {id:'berserk_s4',ic:'😤',n:'Le Berserk',sub:'Rotation S3',f:'MÉCHANT',pv:'Rotation S3.',ref:'s3',rl:'S3'},
+    {id:'juge',ic:'⚖',n:'Le Juge',sub:"Il observait. Et à la fin, il tranchait.",f:'MÉCHANT',nw:true,pv:"Faire perdre son équipe en déstabilisant chaque joueur par des jugements impitoyables.",obj:"Faire perdre son équipe en déstabilisant chaque joueur par des jugements impitoyables et ciblés.",ct:"Tu joues en observant chaque joueur — et tu utilises ce que tu vois pour briser la confiance de ton équipe. Pas par la violence. Par les mots.",cd:[{t:'Analyse',d:"Observer et noter mentalement les erreurs de chaque allié tout au long de la partie."},{t:'Jugement',d:"Émettre au moins 3 jugements directs sur les performances de tes alliés au moment le plus sensible."},{t:'Déstabilisation',d:"Au moins 2 alliés doivent avoir changé leur comportement après tes interventions."},{t:'Impartialité Feinte',d:"Tes jugements doivent sembler objectifs et construits — jamais du tilt, toujours de l'analyse."}],ru:"Ton équipe perd ET plusieurs joueurs ont été déstabilisés par tes 'analyses'.",ec:"Ton équipe gagne ou personne ne réagit à tes jugements.",sc:['Défaite','Contrat','Manipulation'],sb:['équipe perd','2 déstabilisations','jugements crus pour vrais'],di:'Être perçu comme quelqu\'un d\'analytique et objectif — jamais comme un saboteur.',bo:"Un allié change radicalement son style de jeu après l'un de tes jugements.",identite:['Impartial','Froid','Dévastateur'],cq:'"Il ne frappait pas. Il observait. Et ses mots faisaient plus de dégâts."'},
+  ],
+  neu:[
+    {id:'bipolaire_s4',ic:'☯',n:'Le Bipolaire',sub:'Rotation S1',f:'NEUTRE',pv:'Rotation S1.',ref:'s1',rl:'S1'},
+    {id:'heritier_s4',ic:'🌑',n:"L'Héritier du Néant",sub:'Rotation S2',f:'NEUTRE',pv:'Rotation S2.',ref:'s2',rl:'S2'},
+    {id:'fantome_eternel',ic:'👻',n:'Le Fantôme Éternel',sub:"Il était mort depuis longtemps. Il jouait juste encore.",f:'NEUTRE',nw:true,pv:"Exister dans la partie comme une présence fantomatique — impactant mais jamais tangible.",obj:"Exister dans la partie comme une présence fantomatique — impactant mais jamais tangible.",ct:"Stats parfaitement médianes sur tous les critères. Impact réel reconnu au vote.",cd:[{t:'Invisibilité Statistique',d:"Stats parfaitement médianes sur tous les critères — ni dans le top 3, ni dans le bottom 3 sur kills, deaths, assists, CS, vision."},{t:'Impact Réel',d:"Au moins 3 joueurs doivent dire lors du vote qu'il a influencé la partie malgré des stats invisibles."},{t:'Présence Fantomatique',d:'Être présent dans les moments clés sans jamais apparaître dans les statistiques.'}],ru:'Stats médianes ET 3 reconnaissances d\'impact au vote.',ec:'Stats trop extrêmes ou impact non reconnu.',sc:['Destin','Objectif','Mystère'],sb:['auto +1pt','stats médianes','3 reconnaissances'],di:"Personne ne le devine — ses stats ne correspondent à aucun rôle connu.",bo:'Être parfaitement médian sur TOUS les critères statistiques sans exception.',identite:['Éternel','Invisible','Insaisissable'],cq:'"Il était mort depuis longtemps. Il jouait juste encore."'},
+    {id:'echo',ic:'🔄',n:"L'Écho",sub:"Il répétait l'histoire. Personne ne s'en méfiait.",f:'NEUTRE',bot:true,nw:true,pv:"Reproduire exactement le déroulement d'une partie précédente dans une nouvelle.",obj:"Reproduire exactement le déroulement d'une partie précédente — dans une nouvelle.",ct:"En début de partie, le bot Discord t'envoie le résumé d'une vraie partie jouée par le groupe. Reproduire ce déroulement aussi fidèlement que possible.",cd:[{t:'Mémoire',d:"Bot envoie le résumé d'une vraie partie passée (objectifs, ordre des fights, timings)."},{t:'Reproduction',d:"Reproduire au moins 4 événements dans le bon timing (±2 minutes)."},{t:'Précision',d:"Chaque événement reproduit dans le bon timing → 1 point interne."}],ru:'4 événements reproduits avec précision.',ec:'Moins de 3 événements reproduits ou timing trop éloigné.',sc:['Destin','Objectif','Mystère'],sb:['auto +1pt','4 événements','6 événements = bonus'],di:"Personne ne réalise qu'il rejoue une ancienne partie.",bo:'Reproduire 6 événements ou plus avec une précision de ±2 minutes.',identite:['Mémoriel','Cyclique','Mystérieux'],cq:'"Il répétait l\'histoire. Personne ne s\'en souvenait assez pour s\'en méfier."'},
+  ],
+  ev:[
+    {id:'dieu_dechu',ic:'⚡',n:'Le Dieu Déchu',sub:"Il était tout. Puis il n'était plus rien.",f:'ÉVÉNEMENT',ev:true,bot:true,nw:true,pv:"Commencer comme dieu, tomber à la 20e minute, finir mystère.",obj:"Commencer comme dieu, tomber à la 20e minute, et finir mystère.",ct:"Phase 1 (0-20 min) : 3 points d'avance + rôle secret à dominer. Phase 2 (20 min-fin) : identité change, scoring inversé.",cd:[{t:"Phase 1 — Le Dieu (0-20 min)",d:"Commencer avec 3 points acquis d'avance. Recevoir via bot un rôle secret. Dominer cette phase."},{t:'La Chute (20e min)',d:"Le bot envoie un nouveau message. Ton identité change. Tu reçois un second rôle — à l'opposé du premier."},{t:'Scoring Inversé',d:"Commencer à 3 points. Chaque joueur qui devine correctement ton rôle final → -1 point."}],ru:"Finir avec 3/3 points — personne n'a deviné ton rôle final.",ec:"Perdre tous ses points — tout le monde devine.",sc:['3pts de départ','−1 par devinette','Bonus légendaire'],sb:['démarre à 3','chaque découverte = −1','0pt = légende'],di:"Personne ne réalise que son identité a changé à la 20e minute.",bo:"Score négatif impossible — si 0/3 pts restants, l'exploit est reconnu comme légendaire.",identite:['Omnipotent','Déchu','Renaissant'],cq:'"Il était tout. Puis il n\'était plus rien. Et c\'était encore trop."'},
+    {id:'dernier_gardien',ic:'🏰',n:'Le Dernier Gardien',sub:"Quand tout s'effondre, il reste debout.",f:'ÉVÉNEMENT',ev:true,bot:true,nw:true,pv:"Se déclencher uniquement si l'équipe perd à la 20e minute — et renverser la partie à lui seul.",obj:"Se déclencher uniquement si l'équipe perd à la 20e minute — et renverser la partie à lui seul.",ct:"Bot envoie un message uniquement si l'équipe a un déficit à 20 min. Contrat : renverser la partie seul.",cd:[{t:'Déclenchement Conditionnel',d:"Bot envoie le message uniquement si l'équipe a un déficit d'objectifs à 20 min. Si l'équipe gagne → pas de message, joue normalement."},{t:'Le Retour',d:"Initier le retour, prendre 2 objectifs en infériorité, mener l'équipe de la défaite vers la victoire."},{t:"Invisibilité du Moteur",d:"Les ennemis ne comprennent pas d'où vient le retour."}],ru:"Remporter la partie après avoir été en déficit à 20 min.",ec:"Ne pas réussir à renverser ou équipe était déjà en train de gagner.",sc:['Victoire','Contrat','Discrétion'],sb:['retour accompli','2 objectifs','non identifié moteur'],di:"Les ennemis ne comprennent pas d'où vient le retour.",bo:"Remporter la partie après avoir été à moins de 5k d'or de déficit à 20 min.",identite:['Inébranlable','Héroïque','Ultime'],cq:'"Quand tout s\'effondre, il reste debout. Parce qu\'il n\'a pas le choix."'},
+  ],
+},
+};
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+const TC={SAFE:'safe',MÉCHANT:'evil',NEUTRE:'neu',ÉVÉNEMENT:'ev'};
+const SCL={s1:'var(--s1)',s2:'var(--s2)',s3:'var(--s3)',s4:'var(--s4)'};
+const ACL={safe:'var(--sb)',evil:'var(--eb)',neu:'var(--nb)',ev:'var(--evb)'};
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function tc(f){return TC[f]||'neu';}
+function badge(r){
+  if(r.ref) return 'Rotation '+r.rl;
+  if(r.nw) return '✦ Nouveau';
+  if(r.ev) return 'Événement';
+  return r.f;
+}
+
+// ══════════════════════════════════════════════
+// BUILD CARD
+// ══════════════════════════════════════════════
+function mkCard(r,sn){
+  const t=tc(r.f),b=badge(r);
+  const d=document.createElement('div');
+  d.className='rc '+t;
+  d.innerHTML=`<div class="rctb"></div><div class="rch"><div class="rcic">${r.ic}</div><div class="rcnw"><div class="rcn">${esc(r.n)}</div><div class="rcs">${esc(r.sub)}</div></div><div class="rcbg">${esc(b)}</div></div><div class="rcpv">${esc(r.pv)}</div>`;
+  d.addEventListener('click',()=>openRM(r,sn));
+  return d;
+}
+
+// ══════════════════════════════════════════════
+// ROLE MODAL
+// ══════════════════════════════════════════════
+function openRM(r,sn){
+  const t=tc(r.f),ac=ACL[t],sc2=SCL[sn]||'var(--s1)';
+  let body='';
+  if(r.ref){
+    const sn2=r.ref,sl=r.rl;
+    body=`<div style="text-align:center;padding:2rem;color:var(--muted);font-style:italic;font-size:.95rem;line-height:1.6;">Ce rôle est un <strong style="color:var(--cream)">${r.rl?'rôle de rotation ('+r.rl+')':'rôle du socle'}</strong>.<br>Sa fiche complète est disponible dans l'onglet <strong style="color:${sc2}">Saison ${sl.replace('S','')}</strong>.<br><br><span style="font-size:.85rem">Mécaniques et contrat identiques à la saison d'origine.</span></div>`;
+  } else {
+    const conds=(r.cd||[]).map(c=>`<div class="ci2"><span class="cb2" style="color:${ac}">◆</span><span><span class="ct" style="color:${ac}">${esc(c.t)}</span>${esc(c.d)}</span></div>`).join('');
+    body=`
+      ${r.ev?`<div class="evbn"><span style="color:var(--evt);font-size:14px">✦</span><span class="evbt">Exclusif · Tirage rare · ${sn.toUpperCase()}</span></div>`:''}
+      ${r.bot?'<div class="botag">🤖 Bot Discord requis</div>':''}
+      ${r.nw?'<div class="nwtag">✦ Nouveau</div>':''}
+      <div class="rg2">
+        <div class="blk"><div class="bt" style="color:${ac}">🎯 Objectif</div><div class="bx">${esc(r.obj||'')}</div></div>
+        <div class="blk"><div class="bt" style="color:${ac}">📜 Contrat</div><div class="bx">${esc(r.ct||'')}</div></div>
+      </div>
+      ${conds?`<div class="blk full"><div class="bt" style="color:${ac}">⚙ Conditions</div>${conds}</div>`:''}
+      <div class="rg2">
+        <div class="blk" style="border-color:var(--sd)"><div class="bt" style="color:var(--st)">🏆 Réussite</div><div class="bx">${esc(r.ru||'')}</div></div>
+        <div class="blk" style="border-color:var(--ed)"><div class="bt" style="color:var(--et)">✗ Échec</div><div class="bx">${esc(r.ec||'')}</div></div>
+      </div>
+      <div class="srow">
+        ${(r.sc||[]).map((s,i)=>`<div class="spt"><div class="spn">1</div><div class="spl">${esc(s)}</div><div class="sps">${esc((r.sb||[])[i]||'')}</div></div>`).join('')}
+      </div>
+      <div class="blk full"><div class="bt" style="color:${ac}">👁 Discrétion</div><div class="bx">${esc(r.di||'')}</div></div>
+      <div class="blk full"><div class="bt" style="color:var(--gold)">⭐ Bonus</div><div class="bx" style="color:var(--gl);font-style:italic">${esc(r.bo||'')}</div></div>
+      <div class="rg2">
+        <div class="blk">
+  <div class="bt" style="color:${ac}">🎭 Identité</div>
+  <div class="idrow">
+    ${(r.identite||[]).map(i=>`<span class="idtag">${esc(i)}</span>`).join('')}
+  </div>
+</div>
+        <div class="blk"><div class="bt" style="color:var(--gold)">💡 Conseil du Maître</div><div class="cq">${esc(r.cq||'')}</div></div>
+      </div>`;
+  }
+  document.getElementById('rmc').innerHTML=`
+    <div class="rmd">
+      <div class="rmb" style="background:linear-gradient(135deg,rgba(0,0,0,.8),var(--surface));">
+        <button class="rmcl" onclick="closeRM()">✕</button>
+        <div class="rmf" style="color:${ac}">${esc(r.f)}${r.nw?' · ✦ Nouveau '+sn.toUpperCase():''}</div>
+        <div class="rmn" style="color:${ac}">${esc(r.n)}</div>
+        <div class="rmt">${esc(r.sub)}</div>
+      </div>
+      <div class="rmbd">${body}</div>
+    </div>`;
+  document.getElementById('rmo').classList.add('open');
+}
+function closeRM(){document.getElementById('rmo').classList.remove('open');}
+
+// ══════════════════════════════════════════════
+// INIT GRIDS
+// ══════════════════════════════════════════════
+function initGrids(){
+  ['s1','s2','s3','s4'].forEach(sn=>{
+    const sd=SD[sn];
+    ['safe','evil','neu','ev'].forEach(t=>{
+      const g=document.getElementById('g-'+sn+'-'+t);
+      if(g)(sd[t]||[]).forEach(r=>g.appendChild(mkCard(r,sn)));
+    });
+  });
+}
+
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+function showTab(id){
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tp-'+id).classList.add('active');
+  const map={s1:0,s2:1,s3:2,s4:3,an:4};
+  const tabs=document.querySelectorAll('.ntab');
+  if(map[id]!==undefined)tabs[map[id]].classList.add('active');
+}
+
+// ══════════════════════════════════════════════
+// SOCKET.IO + LOBBY
+// ══════════════════════════════════════════════
+let socket=null,myUser=null,myLid=null,curL=null;
+
+function initSocket(cb){
+  if(socket){cb&&cb();return;}
+  socket=io();
+  socket.on('lobby_list',list=>renderL(list));
+  socket.on('lobby_update',l=>{curL=l;updateRoom(l);});
+  socket.on('kicked',()=>{closeRoom();showToast('Vous avez été expulsé.',true);});
+  socket.on('promoted_master',()=>showToast('✦ Tu es maintenant l\'hôte.'));
+  socket.on('game_started',d=>showReveal(d.role,d.allPlayers));
+  cb&&cb();
+}
+
+function openLM(){document.getElementById('lm').classList.add('open');initSocket(()=>socket.emit('lobby_list_req'));}
+function closeLM(){document.getElementById('lm').classList.remove('open');}
+function swMT(id,btn){
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.mpanel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');document.getElementById('mp-'+id).classList.add('active');
+}
+
+function createL(){
+  const n=document.getElementById('lname').value.trim();
+  const h=document.getElementById('hname').value.trim();
+  if(!n||!h){showToast('Remplis tous les champs.',true);return;}
+  const btn=document.getElementById('bncr');
+  btn.disabled=true;btn.textContent='Création…';
+  initSocket(()=>{
+    socket.emit('create_lobby',{name:n,host:h,season:document.getElementById('lseason').value},res=>{
+      btn.disabled=false;btn.textContent='Créer le lobby →';
+      if(res.error){showToast(res.error,true);return;}
+      myUser=h;myLid=res.lobby.id;curL=res.lobby;
+      closeLM();openRoom(res.lobby);
+    });
+  });
+}
+
+function joinL(id){
+  const n=document.getElementById('jname').value.trim();
+  if(!n){showToast('Entre ton pseudo.',true);return;}
+  initSocket(()=>{
+    socket.emit('join_lobby',{lobbyId:id,username:n},res=>{
+      if(res.error){showToast(res.error,true);return;}
+      myUser=n;myLid=res.lobby.id;curL=res.lobby;
+      closeLM();openRoom(res.lobby);
+    });
+  });
+}
+
+function renderL(list){
+  const el=document.getElementById('llist');
+  if(!list||list.length===0){el.innerHTML='<div class="nol">Aucun lobby actif.<br>Sois le premier à en créer un !</div>';return;}
+  el.innerHTML=list.map(l=>`
+    <div class="li2" onclick="joinL('${esc(l.id)}')">
+      <div style="flex:1"><div class="lnm">${esc(l.name)}</div><div class="lmt">Hôte : ${esc(l.host)} · ${l.players}/${l.maxPlayers} joueurs</div></div>
+      <div style="text-align:right"><div class="lcnt ${l.status==='full'?'fu':'op'}">${l.players}/${l.maxPlayers}</div><div class="lsp ${l.status==='open'?'op':'fu'}">${l.status==='open'?'Ouvert':'Complet'}</div></div>
+    </div>`).join('');
+}
+
+function refreshL(){initSocket(()=>socket.emit('lobby_list_req'));}
+
+function openRoom(l){document.getElementById('rm').classList.add('open');updateRoom(l);}
+function closeRoom(){document.getElementById('rm').classList.remove('open');}
+function leaveR(){socket&&socket.emit('leave_lobby');closeRoom();curL=null;myUser=null;myLid=null;}
+
+function updateRoom(l){
+  const isH=myUser===l.host;
+  document.getElementById('rmtt').textContent='✦ '+esc(l.name);
+  document.getElementById('rmbd').innerHTML=`
+    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;">
+      <span style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Code :</span>
+      <strong style="font-family:'Cinzel',serif;color:var(--gold);font-size:.9rem;">${esc(l.id)}</strong>
+      <span style="font-size:.8rem;color:var(--muted);font-style:italic;">— partage à tes joueurs</span>
+    </div>
+    <div style="background:var(--surface2);border:.5px solid var(--border);border-radius:4px;padding:.8rem 1rem;margin-bottom:1rem;">
+      <div style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;">Joueurs (${l.players}/${l.maxPlayers})</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${(l.playerNames||[]).map((p,i)=>`<span class="pchip ${i===0?'host':''}">${esc(p)}${i===0?' 👑':''}</span>`).join('')}
+        ${Array.from({length:Math.max(0,l.maxPlayers-(l.playerNames||[]).length)}).map(()=>`<span style="font-size:.8rem;padding:3px 9px;border-radius:2px;border:.5px dashed var(--border);color:var(--muted);font-style:italic;">libre</span>`).join('')}
+      </div>
+    </div>
+    <div style="font-size:.8rem;color:var(--muted);font-style:italic;margin-bottom:.8rem;">${isH?'Lance une partie LoL avec tes joueurs. Distribue les rôles quand tout le monde est là.':'En attente de l\'hôte <strong style="color:var(--cream)">'+esc(l.host)+'</strong>.'}</div>
+    ${l.players<l.maxPlayers?`<div style="font-size:.8rem;color:var(--gold);font-style:italic;margin-bottom:.8rem;">En attente… (${l.players}/${l.maxPlayers})</div>`:'<div style="font-size:.8rem;color:var(--st);margin-bottom:.8rem;">✦ Lobby complet !</div>'}
+    ${isH&&!l.gameStarted?`<button class="bgold" ${l.players<2?'disabled':''} onclick="startGame()" style="background:linear-gradient(135deg,#0a2818,var(--safe));">⚔ Distribuer les rôles (${l.players} joueurs)</button>`:''}`;
+}
+
+function startGame(){
+  const btn=document.querySelector('#rmbd .bgold');
+  if(btn){btn.disabled=true;btn.textContent='Distribution en cours…';}
+  socket.emit('start_game',res=>{
+    if(res&&res.error){showToast(res.error,true);if(btn){btn.disabled=false;btn.textContent='⚔ Distribuer les rôles';}}
+  });
+}
+
+// ══════════════════════════════════════════════
+// ROLE REVEAL
+// ══════════════════════════════════════════════
+function normalizeText(s){
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/^le |^la |^l'/,'')
+    .replace(/[^a-z0-9]/g,'');
+}
+
+function findRoleData(role){
+  const keys = [
+    role.id,
+    role.label,
+    role.name,
+    role.nom,
+    role.n
+  ].map(normalizeText).filter(Boolean);
+
+  for(const season of Object.values(SD)){
+    for(const group of ['safe','evil','neu','ev']){
+      const found = (season[group] || []).find(r => {
+        const roleKeys = [
+          r.id,
+          r.n,
+          r.n?.replace(/^Le |^La |^L'/,'')
+        ].map(normalizeText);
+
+        return keys.some(k => roleKeys.includes(k));
+      });
+
+      if(found) return found;
+    }
+  }
+
+  return role;
+}
+
+function roleImgPath(r){
+  const m={'heros':'heros.png','farmeur':'farmeur.png','gardien':'gardien.png',
+    'traqueur':'traqueur.png','mouton':'mouton.png','meneur':'meneur.png',
+    'assassin':'assassin.png','metteur':'metteur.png','enfant':'enfant.png',
+    'afk':'afk.png','noob':'noob.png','bad_guy':'bad_guy.png','drama':'drama.png',
+    'bipolaire':'bipolaire.png','imitateur':'imitateur.png','heritier':'heritier.png',
+    'bebe_dragon':'bebe_dragon.png','elu':'bebe_dragon.png'};
+  const id=(r.id||'').replace(/_s[1-4]$/,'');
+  return 'img/'+(m[id]||'heros.png');
+}
+
+function openRoleImage(src){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.96);overflow:auto;padding:40px;cursor:zoom-out;';
+  ov.innerHTML=`
+    <div style="position:fixed;top:20px;right:25px;color:#fff;font-size:32px;font-family:sans-serif;pointer-events:none;">✕</div>
+    <img src="${src}" style="display:block;margin:auto;width:auto;max-width:none;min-width:900px;border-radius:12px;box-shadow:0 0 50px rgba(0,0,0,.8);">
+  `;
+  ov.onclick=()=>ov.remove();
+  document.body.appendChild(ov);
+}
+
+function showReveal(role,allPlayers){
+  closeRoom();
+
+  const fullRole = findRoleData(role);
+  role = {...role, ...fullRole};
+
+  const tm = role.f || role.type || role.id;
+  const cc = {
+    SAFE:'#4dba80',
+    MECHANT:'#e04545',
+    MÉCHANT:'#e04545',
+    NEUTRE:'#8070d0',
+    EVENEMENT:'#d09030',
+    ÉVÉNEMENT:'#d09030'
+  }[tm] || '#c9933a';
+
+  const tl = {
+    SAFE:'⚔ Allié',
+    MECHANT:'☠ Méchant',
+    MÉCHANT:'☠ Méchant',
+    NEUTRE:'⚖ Neutre',
+    EVENEMENT:'✦ Événement',
+    ÉVÉNEMENT:'✦ Événement'
+  }[tm] || tm;
+
+  const conds = (role.cd || []).map(c=>`
+  <div class="ci2">
+    <span class="cb2" style="color:${cc}">◆</span>
+    <span>
+      <span class="ct" style="color:${cc}">${esc(c.t)}</span>
+      ${esc(c.d)}
+    </span>
+  </div>
+`).join('');
+
+document.getElementById('rvmd').innerHTML=`
+  <div class="rvpr">Votre rôle secret a été attribué</div>
+  <div class="rvfc" style="color:${cc}">${esc(tl)}</div>
+  <div class="rvnm" style="color:${cc};filter:drop-shadow(0 0 30px ${cc}60)">${esc(role.n || role.label || role.id)}</div>
+  <div class="rvdv" style="background:linear-gradient(90deg,transparent,${cc},transparent)"></div>
+
+  <div class="rvg">
+    <div class="rvblk"><div class="rvbt">🎯 Objectif</div><div class="rvbx">${esc(role.obj || role.objectif || '')}</div></div>
+    <div class="rvblk"><div class="rvbt">📜 Contrat</div><div class="rvbx">${esc(role.ct || role.contrat || '')}</div></div>
+  </div>
+
+  ${conds ? `
+  <div class="rvblk full" style="margin-bottom:8px">
+    <div class="rvbt" style="color:${cc}">⚙ Conditions</div>
+    ${conds}
+  </div>` : ''}
+
+  <div class="rvg">
+    <div class="rvblk" style="border-color:var(--sd)">
+      <div class="rvbt" style="color:var(--st)">🏆 Réussite</div>
+      <div class="rvbx">${esc(role.ru || '')}</div>
+    </div>
+    <div class="rvblk" style="border-color:var(--ed)">
+      <div class="rvbt" style="color:var(--et)">✗ Échec</div>
+      <div class="rvbx">${esc(role.ec || '')}</div>
+    </div>
+  </div>
+
+  <div class="rvscores">
+    ${(role.sc || role.scoring || []).map((s,i)=>`
+      <div class="rvsc">
+        <div class="rvscn">1</div>
+        <div class="rvscl">${esc(s)}</div>
+        <div class="sps">${esc((role.sb || [])[i] || '')}</div>
+      </div>
+    `).join('')}
+  </div>
+
+  <div class="rvblk full" style="margin-bottom:8px">
+    <div class="rvbt">👁 Discrétion</div>
+    <div class="rvbx">${esc(role.di || role.discretion || '')}</div>
+  </div>
+
+  <div class="rvblk full" style="margin-bottom:8px">
+    <div class="rvbt" style="color:var(--gold)">⭐ Bonus</div>
+    <div class="rvbx" style="color:var(--gl);font-style:italic">${esc(role.bo || role.bonus || '')}</div>
+  </div>
+<div class="rvg">
+  <div class="rvblk">
+    <div class="rvbt" style="color:${cc}">🎭 Identité</div>
+    <div class="idrow">
+      ${(role.identite || []).map(i=>`
+        <span class="idtag">${esc(i)}</span>
+      `).join('')}
+    </div>
+  </div>
+
+  <div class="rvblk">
+    <div class="rvbt" style="color:var(--gold)">💡 Conseil du Maître</div>
+    <div class="rvcq" style="margin-bottom:0">${esc(role.cq || role.conseil || '')}</div>
+  </div>
+</div>
+  <div style="
+    margin:1rem 0 1.5rem;
+    text-align:center;
+    background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(201,147,58,.08));
+    border:.5px solid var(--border);
+    border-radius:8px;
+    padding:1.2rem;
+  ">
+    <div style="
+      font-family:'Cinzel',serif;
+      font-size:.65rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:.8rem;
+    ">
+      ✦ Fiche visuelle du rôle disponible
+    </div>
+
+    <button class="rvbtn"
+      onclick="openRoleImage('${roleImgPath(role)}')"
+      style="
+        width:auto;
+        padding:.85rem 2.3rem;
+        font-size:.72rem;
+        animation:none;
+      ">
+      🔎 Ouvrir la fiche complète
+    </button>
+  </div>
+
+  </div>
+
+</div>
+
+  <div class="rvwarn">⚠ <strong style="color:var(--cream)">Mémorise bien ton rôle.</strong> Ne le révèle à personne.<br>Lance ta partie League of Legends avec ${allPlayers?allPlayers.length:10} joueurs.</div>
+
+  <button class="rvbtn" onclick="document.getElementById('rvo').classList.remove('open')">✔ J'ai mémorisé mon rôle — Bonne partie !</button>`;
+    
+  document.getElementById('rvo').classList.add('open');
+}
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=err?'var(--ed)':'var(--sd)';
+  t.style.color=err?'var(--et)':'var(--st)';
+  t.style.border=`.5px solid ${err?'var(--evil)':'var(--safe)'}`;
+  t.style.opacity='1';
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.style.opacity='0',3000);
+}
+
+// ══════════════════════════════════════════════
+// PARTICULES
+// ══════════════════════════════════════════════
+(function(){
+  const c=document.getElementById('pt'),ctx=c.getContext('2d');
+  let W,H,P=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  function init(){P=[];const n=Math.floor(W*H/22000);for(let i=0;i<n;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.3,vx:(Math.random()-.5)*.1,vy:-Math.random()*.25-.05,o:Math.random()*.5+.1,p:Math.random()*Math.PI*2,col:Math.random()>.7?[144,96,192]:[201,147,58]});}
+  function draw(){ctx.clearRect(0,0,W,H);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.p+=.008;if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;const a=p.o*(.6+.4*Math.sin(p.p));ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${p.col[0]},${p.col[1]},${p.col[2]},${a})`;ctx.fill();});requestAnimationFrame(draw);}
+  resize();init();draw();
+  window.addEventListener('resize',()=>{resize();init();});
+})();
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+initGrids();
+
+</script>
+<script>
+document.addEventListener('click', e => {
+  const img = e.target.closest('.zoomable');
+  if(!img) return;
+  e.preventDefault();
+
+  const ov = document.createElement('div');
+  ov.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.96);
+    z-index:99999;
+    overflow:auto;
+    padding:40px;
+    cursor:zoom-out;
+  `;
+
+  ov.innerHTML = `
+    <img src="${img.src}"
+    style="
+      display:block;
+      margin:auto;
+      max-width:none;
+      width:auto;
+      min-width:80%;
+      border-radius:10px;
+      box-shadow:0 0 40px rgba(0,0,0,.8);
+    ">
+  `;
+
+  ov.onclick = () => ov.remove();
+
+  document.body.appendChild(ov);
+});
+</script>
+</body>
+</html>

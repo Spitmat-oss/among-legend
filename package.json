@@ -1,0 +1,13 @@
+{
+  "name": "among-legend",
+  "version": "1.0.0",
+  "description": "Jeu de rôles secret sur League of Legends — Saison 1 : L'Aube des Légendes",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  }
+}
