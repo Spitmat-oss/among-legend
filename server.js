@@ -169,8 +169,8 @@ io.on('connection', (socket) => {
 
     const myData = lobby.players.get(me);
     if (!myData?.isMaster) return callback?.({ error: 'Seul le maître peut lancer.' });
-    if (lobby.players.size !== 10) {
-      return callback?.({ error: 'Il faut exactement 10 joueurs pour lancer la partie.' });
+    if (lobby.players.size < 2) {
+      return callback?.({ error: 'Il faut au moins 2 joueurs pour lancer la partie.' });
     }
 
     lobby.gameStarted = true;
