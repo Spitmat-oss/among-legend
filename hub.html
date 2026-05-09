@@ -442,7 +442,25 @@ s1:{
   ],
   ev:[
     {id:'bebe_dragon',ic:'🐉',n:'Le Bébé Dragon',sub:"Un bébé aujourd'hui… une légende demain.",f:'ÉVÉNEMENT',ev:true,pv:"Récupérer les fragments de l'âme de ta mère avant que sa corruption ne soit irréversible.",obj:"Récupérer les fragments de l'âme de ta mère avant que sa corruption ne soit irréversible.",ct:"Une âme brisée. Une mission transmise. Traquée, ta mère a divisé son âme en plusieurs fragments. Tu dois en récupérer au moins la moitié… avant qu'elle ne disparaisse.",cd:[{t:'Récupération',d:"Participer à la prise de 3 Drakes (1 Drake = 1 fragment d'âme)."},{t:'Corruption',d:"Si tu échoues : l'âme de ta mère tombe entre les mains de ses chasseurs…"},{t:'Seconde Chance',d:"Si un ennemi récupère un fragment avant toi : tu as 5 minutes pour le récupérer sur le voleur."},{t:'Dernière Chance Elder',d:"Participer à la prise de l'Elder Dragon."}],ru:'Tu récupères les fragments nécessaires avant la fin de la partie.',ec:'Aucun fragment récupéré. Aucune libération d\'âme. Absence lors de l\'Elder.',sc:['Victoire','Contrat','Discrétion'],sb:['équipe gagne','3 Drakes pris','non deviné avant 15min'],di:'Personne ne te devine avant la mi-partie.',bo:'Finir avec la plus grande progression de stats entre le début et la fin.',identite:['Loyal','Héritier','Déterminé'],cq:'"Un bébé aujourd\'hui… une légende demain."'},
-    {id:'elu',ic:'✦',n:"L'Élu",sub:'Personne ne sait. Pas même toi.',f:'ÉVÉNEMENT',ev:true,bot:true,pv:"Aucun objectif ne t'est révélé. Joue la partie normalement.",obj:"Aucun objectif ne t'est révélé. Tu joues la partie normalement. Mais parfois… le destin observe certains joueurs sans qu'ils ne le sachent.",ct:"Ton rôle reste caché jusqu'à la révélation finale. Pendant la partie, le destin observe : tes décisions, ton impact, les moments critiques, les retournements créés autour de toi.",cd:[{t:'Destin Observé',d:"Tu ignores totalement si tu progresses, si tu échoues, ou même si tu possèdes réellement un rôle spécial."},{t:'Impact Invisible',d:"Le groupe analyse après la partie les clutchs, retournements, survies improbables, moments où la partie a basculé à cause de toi."},{t:'Révélation Finale',d:"Ton rôle est révélé uniquement après les votes, après la révélation des autres rôles, à la toute fin."},{t:'Vote Permanent',d:"À chaque fin de partie, tous les joueurs votent pour 'qui méritait d'être l'Élu'. Points comptabilisés uniquement si le rôle était présent dans la partie."}],ru:"Le groupe te reconnaît comme l'Élu au vote final.",ec:"Tu n'es pas reconnu. Ton impact était trop invisible ou trop ordinaire.",sc:['Destin','Vote Collectif','Bonus'],sb:['auto +1pt','reconnu par le groupe','équipe gagne'],di:'Impossible à deviner — bonus automatique.',bo:"Si tu es reconnu comme l'Élu : tu remportes automatiquement un point bonus unique.",identite:['Mystérieux','Instinctif','Imprévisible'],cq:'"Le destin ne choisit pas toujours les plus forts… parfois, il choisit simplement celui qui était au bon endroit lorsque le monde a basculé."'},
+    {id:'elu',ic:'✦',n:"L'Élu",sub:'Il ne savait pas. Jusqu\'à la 15e minute.',f:'ÉVÉNEMENT',ev:true,bot:true,
+pv:"Être sacré par le groupe à la 15e minute et devenir le joueur le plus mémorable de la partie.",
+obj:"Être sacré Élu par le vote collectif, abandonner ton ancien rôle, et marquer la partie de ton empreinte.",
+ct:"En début de partie, tous les autres joueurs votent en secret pour 'qui mérite d'être l'Élu'. À la 15e minute, le bot révèle le résultat au joueur élu uniquement. Son ancien rôle disparaît. Il devient L'Élu.",
+cd:[
+  {t:'Le Vote Secret',d:"Tous les joueurs (sauf toi) reçoivent un vote bot en début de partie : 'Qui mérite d'être l'Élu ?' Le résultat reste secret jusqu'à la 15e minute."},
+  {t:'Le Sacre',d:"À la 15e minute, si tu es élu : le bot t'envoie 'Tu viens d'être sacré. Tu n'es plus qui tu étais.' Ton ancien rôle disparaît. Tu joues désormais pour L'Élu uniquement."},
+  {t:'Moments Mémorables',d:"Tu dois créer au moins 2 moments dont tout le monde parlera après la partie — clutch, retournement, action héroïque ou catastrophique. Peu importe le sens."},
+  {t:'Invisibilité du Sacre',d:"Personne ne doit savoir que tu as changé de rôle à la 15e minute. Tu continues à jouer naturellement — mais avec une intensité différente."},
+  {t:'Si tu n\'es pas élu',d:"Tu joues ton rôle original jusqu'à la fin. Le bot ne t'envoie rien. Tu n'es pas L'Élu cette partie."}
+],
+ru:"Tu es cité spontanément par au moins 3 joueurs au vote final ET personne ne sait que tu as changé de rôle.",
+ec:"Ton impact est invisible après le sacre ou quelqu'un réalise que tu as changé de comportement à la 15e minute.",
+sc:['Destin','Reconnaissance','Discrétion'],
+sb:['auto +1pt','3 citations au vote','transition invisible'],
+di:'Impossible à deviner avant la révélation — ton comportement naturel est ton meilleur camouflage.',
+bo:"Être cité unanimement par tous les joueurs comme le moment le plus mémorable de la saison.",
+identite:['Sacré','Mémorable','Involontaire'],
+cq:'"Il n\'a pas choisi le destin. Le destin a choisi à sa place. Et tout le monde s\'en souvient encore."'},
   ],
 },
 

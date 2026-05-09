@@ -91,6 +91,7 @@ io.on('connection', (socket) => {
       createdAt:   Date.now(),
       players:     new Map(),   // username → { socketId, isMaster }
       roles:       {},
+      teams:       null,
       readyPlayers: new Set(),
     };
 
@@ -167,18 +168,28 @@ io.on('connection', (socket) => {
     if (!lobby) return;
 
     const myData = lobby.players.get(me);
-    if (!myData?.isMaster)      return callback?.({ error: 'Seul le maître peut lancer.' });
-    if (lobby.players.size < 2) return callback?.({ error: 'Il faut au moins 2 joueurs.' });
+    if (!myData?.isMaster) return callback?.({ error: 'Seul le maître peut lancer.' });
+    if (lobby.players.size !== 10) {
+      return callback?.({ error: 'Il faut exactement 10 joueurs pour lancer la partie.' });
+    }
 
     lobby.gameStarted = true;
     const playerNames = [...lobby.players.keys()];
-    lobby.roles       = assignRoles(playerNames, lobby.season);
+    const setup = assignRoles(playerNames, lobby.season);
+    lobby.roles = setup.rolesByPlayer;
+    lobby.teams = setup.teams;
 
     console.log(`[GAME] Partie lancée dans ${lobbyId} — ${playerNames.length} joueurs`);
 
     for (const [username, playerData] of lobby.players) {
       const pSocket = io.sockets.sockets.get(playerData.socketId);
-      if (pSocket) pSocket.emit('game_started', { role: lobby.roles[username] });
+      if (pSocket) {
+        pSocket.emit('game_started', {
+          role: lobby.roles[username],
+          allPlayers: playerNames,
+          teams: lobby.teams,
+        });
+      }
     }
 
     broadcastLobbyList();
@@ -261,54 +272,173 @@ const ROLE_LABELS_S1 = {
 };
 
 const TYPE_POINTS = {
-  SAFE:   { safe:  1.0, evil: -0.8 },
-  EVIL:   { safe: -1.0, evil:  0.8 },
-  NEUTRE: { safe:  0.0, evil:  0.0 },
+  SAFE: 1,
+  EVIL: -1,
+  NEUTRE: 0,
 };
 
-function assignRoles(playerNames, season = 's1') {
-  const roles   = ROLES_S1;
-  const labels  = ROLE_LABELS_S1;
+const SEASON_ROLE_POOLS = {
+  s1: { roles: ROLES_S1, labels: ROLE_LABELS_S1 },
+};
+
+const LANE_KEYS = ['top', 'jungle', 'mid', 'adc', 'support'];
+const LANE_LABELS = {
+  top: 'Top',
+  jungle: 'Jungle',
+  mid: 'Mid',
+  adc: 'ADC',
+  support: 'Support',
+};
+
+// Extensible : ajouter ici les rôles forcés jungle des saisons futures.
+const FORCED_JUNGLE_BY_SEASON = {
+  s1: new Set(['bebe_dragon', 'enfant_de_la_jungle']),
+};
+
+function shuffle(arr) {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+function isRoleSelectionBalanced(selection) {
+  let evilCount = 0;
+  let safeCount = 0;
+  let score = 0;
+
+  for (const role of selection) {
+    score += TYPE_POINTS[role.type] ?? 0;
+    if (role.type === 'EVIL') evilCount += 1;
+    if (role.type === 'SAFE') safeCount += 1;
+  }
+
+  return (
+    score >= -2 &&
+    score <= 2 &&
+    evilCount >= 2 &&
+    evilCount <= 4 &&
+    evilCount <= safeCount
+  );
+}
+
+function pickBalancedRoles(playerCount, season = 's1') {
+  const seasonPool = SEASON_ROLE_POOLS[season] || SEASON_ROLE_POOLS.s1;
   const allRoles = [];
-  for (const [type, names] of Object.entries(roles)) {
-    for (const name of names) allRoles.push({ name, type });
+  for (const [type, ids] of Object.entries(seasonPool.roles)) {
+    for (const id of ids) allRoles.push({ id, type });
   }
 
-  const n = playerNames.length;
-  let picked = null;
+  if (allRoles.length < playerCount) {
+    throw new Error(`Pas assez de rôles pour ${playerCount} joueurs.`);
+  }
 
-  for (let attempt = 0; attempt < 2000; attempt++) {
-    const pool = [...allRoles];
-    for (let i = pool.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    const candidate = pool.slice(0, n);
-    let safe = 0, evil = 0;
-    for (const r of candidate) {
-      safe += TYPE_POINTS[r.type].safe;
-      evil += TYPE_POINTS[r.type].evil;
-    }
-    if (safe >= -1 && safe <= 1 && evil >= -1 && evil <= 1) {
-      picked = candidate;
-      break;
+  const forcedJungle = FORCED_JUNGLE_BY_SEASON[season] || new Set();
+
+  for (let attempt = 0; attempt < 5000; attempt++) {
+    const candidate = shuffle(allRoles).slice(0, playerCount);
+    const forcedJungleCount = candidate.filter(r => forcedJungle.has(r.id)).length;
+    if (forcedJungleCount > 2) continue;
+    if (isRoleSelectionBalanced(candidate)) return candidate;
+  }
+
+  throw new Error("Impossible de générer une composition équilibrée avec les contraintes.");
+}
+
+function assignTeamsAndLanes(playerRoles, season = 's1') {
+  const forcedJungle = FORCED_JUNGLE_BY_SEASON[season] || new Set();
+  const allPlayers = shuffle(playerRoles);
+  const forced = allPlayers.filter(p => forcedJungle.has(p.role.id));
+  const free = allPlayers.filter(p => !forcedJungle.has(p.role.id));
+
+  if (forced.length > 2) {
+    throw new Error("Trop de rôles nécessitant la jungle dans cette composition.");
+  }
+
+  const blue = [];
+  const red = [];
+
+  if (forced.length === 2) {
+    const [a, b] = shuffle(forced);
+    blue.push(a);
+    red.push(b);
+  } else if (forced.length === 1) {
+    const [only] = forced;
+    (Math.random() < 0.5 ? blue : red).push(only);
+  }
+
+  for (const p of shuffle(free)) {
+    if (blue.length < 5 && red.length < 5) {
+      (Math.random() < 0.5 ? blue : red).push(p);
+    } else if (blue.length < 5) {
+      blue.push(p);
+    } else {
+      red.push(p);
     }
   }
 
-  if (!picked) {
-    picked = playerNames.map(() => ({ name: 'drama_queen', type: 'NEUTRE' }));
-    console.warn('[WARN] assignRoles: fallback NEUTRE.');
+  function withLanes(teamPlayers) {
+    const team = [];
+    const pool = shuffle(teamPlayers);
+    const jungleIdx = pool.findIndex(p => forcedJungle.has(p.role.id));
+    if (jungleIdx >= 0) {
+      const [jungler] = pool.splice(jungleIdx, 1);
+      team.push({ ...jungler, lane: 'jungle', laneLabel: LANE_LABELS.jungle });
+    } else {
+      const [jungler] = pool.splice(Math.floor(Math.random() * pool.length), 1);
+      team.push({ ...jungler, lane: 'jungle', laneLabel: LANE_LABELS.jungle });
+    }
+
+    const remainingLanes = shuffle(LANE_KEYS.filter(l => l !== 'jungle'));
+    for (let i = 0; i < remainingLanes.length; i++) {
+      const lane = remainingLanes[i];
+      const player = pool[i];
+      team.push({ ...player, lane, laneLabel: LANE_LABELS[lane] });
+    }
+    return team;
   }
 
-  const result = {};
-  playerNames.forEach((name, i) => {
-    result[name] = {
-      id:    picked[i].name,
-      type:  picked[i].type,
-      label: labels[picked[i].name] ?? picked[i].name,
+  return {
+    blue: withLanes(blue),
+    red: withLanes(red),
+  };
+}
+
+function assignRoles(playerNames, season = 's1') {
+  const seasonPool = SEASON_ROLE_POOLS[season] || SEASON_ROLE_POOLS.s1;
+  const picked = pickBalancedRoles(playerNames.length, season);
+  const shuffledPlayers = shuffle(playerNames);
+
+  const playerRoles = shuffledPlayers.map((username, i) => {
+    const r = picked[i];
+    return {
+      username,
+      role: {
+        id: r.id,
+        type: r.type,
+        label: seasonPool.labels[r.id] ?? r.id,
+      },
     };
   });
-  return result;
+
+  const teams = assignTeamsAndLanes(playerRoles, season);
+  const result = {};
+
+  for (const [teamKey, entries] of Object.entries(teams)) {
+    for (const entry of entries) {
+      result[entry.username] = {
+        ...entry.role,
+        team: teamKey,
+        teamLabel: teamKey === 'blue' ? 'Blue' : 'Red',
+        lane: entry.lane,
+        laneLabel: entry.laneLabel,
+      };
+    }
+  }
+
+  return { rolesByPlayer: result, teams };
 }
 
 // ── Démarrage ─────────────────────────────────────────────────────────────────
