@@ -831,6 +831,15 @@ document.getElementById('rvmd').innerHTML=`
   <div class="rvnm" style="color:${cc};filter:drop-shadow(0 0 30px ${cc}60)">${esc(role.n || role.label || role.id)}</div>
   <div class="rvdv" style="background:linear-gradient(90deg,transparent,${cc},transparent)"></div>
 
+  ${(role.teamLabel || role.team) ? `<div style="display:flex;gap:8px;justify-content:center;margin-bottom:1rem;flex-wrap:wrap;animation:fup .6s .47s both;">
+    <span style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;padding:4px 14px;border-radius:3px;border:.5px solid ${role.team==='blue'?'#3060c0':'#c43535'};background:${role.team==='blue'?'rgba(48,96,192,.15)':'rgba(196,53,53,.15)'};color:${role.team==='blue'?'#6090e8':'#f07070'};">
+      ${role.team==='blue'?'🔵':'🔴'} Équipe ${esc(role.teamLabel||role.team)}
+    </span>
+    <span style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;padding:4px 14px;border-radius:3px;border:.5px solid var(--border);background:var(--surface2);color:var(--cream);">
+      ${esc(role.laneLabel||role.lane||'')}
+    </span>
+  </div>` : ''}
+
   <div class="rvg">
     <div class="rvblk"><div class="rvbt">🎯 Objectif</div><div class="rvbx">${esc(role.obj || role.objectif || '')}</div></div>
     <div class="rvblk"><div class="rvbt">📜 Contrat</div><div class="rvbx">${esc(role.ct || role.contrat || '')}</div></div>
