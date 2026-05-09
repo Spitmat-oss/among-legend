@@ -252,25 +252,31 @@ const ROLES_S1 = {
 };
 
 const ROLE_LABELS_S1 = {
-  heros:               'Héros',
-  farmeur:             'Farmeur',
-  gardien:             'Gardien',
-  traqueur:            'Traqueur',
-  afk:                 'AFK',
-  meneur:              'Meneur',
-  bebe_dragon:         'Bébé Dragon',
-  assassin:            'Assassin',
-  metteur_en_scene:    'Metteur en Scène',
-  enfant_de_la_jungle: 'Enfant de la Jungle',
-  mouton:              'Mouton',
-  noob:                'Noob',
-  bipolaire:           'Bipolaire',
-  drama_queen:         'Drama Queen',
-  imitateur:           'Imitateur',
-  bad_guy:             'Bad Guy',
-  elu:                 'L\'Élu',
+  heros:       "Le Héros",
+  farmeur:     "Le Farmeur",
+  gardien:     "Le Gardien",
+  traqueur:    "Le Traqueur",
+  mouton:      "Le Mouton",
+  meneur:      "Le Meneur",
+  assassin:    "L'Assassin",
+  metteur:     "Le Metteur en Scène",
+  enfant:      "L'Enfant de la Jungle",
+  afk:         "L'AFK",
+  noob:        "Le Noob",
+  bad_guy:     "Le Bad Guy",
+  drama:       "La Drama Queen",
+  bipolaire:   "Le Bipolaire",
+  bebe_dragon: "Le Bébé Dragon",
+  elu:         "L'Élu",
 };
 
+
+const ROLE_FACTION_S1 = {
+  heros:'SAFE', farmeur:'SAFE', gardien:'SAFE', traqueur:'SAFE', mouton:'SAFE', meneur:'SAFE',
+  assassin:'MÉCHANT', metteur:'MÉCHANT', enfant:'MÉCHANT', afk:'MÉCHANT',
+  noob:'NEUTRE', bad_guy:'NEUTRE', drama:'NEUTRE', bipolaire:'NEUTRE',
+  bebe_dragon:'ÉVÉNEMENT', elu:'ÉVÉNEMENT',
+};
 const TYPE_POINTS = {
   SAFE: 1,
   EVIL: -1,
@@ -292,7 +298,7 @@ const LANE_LABELS = {
 
 // Extensible : ajouter ici les rôles forcés jungle des saisons futures.
 const FORCED_JUNGLE_BY_SEASON = {
-  s1: new Set(['bebe_dragon', 'enfant_de_la_jungle']),
+  s1: new Set(['bebe_dragon', 'enfant']),
 };
 
 function shuffle(arr) {
@@ -441,8 +447,29 @@ function assignRoles(playerNames, season = 's1') {
   return { rolesByPlayer: result, teams };
 }
 
+
+// ── Timer Élu : sacre à 15 min ────────────────────────────────────────────────
+function scheduleEluSacre(lobbyId, lobby, io) {
+  const eluPlayer = Object.entries(lobby.roles).find(([, r]) => r.id === 'elu')?.[0];
+  if (!eluPlayer) return;
+  console.log(`[ELU] Sacre programmé dans 15 min pour ${eluPlayer} (${lobbyId})`);
+  setTimeout(() => {
+    const currentLobby = lobbies.get(lobbyId);
+    if (!currentLobby) return;
+    const playerData = currentLobby.players.get(eluPlayer);
+    if (!playerData?.socketId) return;
+    const pSocket = io.sockets.sockets.get(playerData.socketId);
+    if (pSocket) {
+      pSocket.emit('elu_sacre', {
+        message: "✦ Tu viens d'être sacré. Tu n'es plus qui tu étais.",
+        detail:  "Ton ancien rôle disparaît. Joue désormais pour L'Élu uniquement. Marque cette partie de ton empreinte."
+      });
+      console.log(`[ELU] Sacre envoyé à ${eluPlayer}`);
+    }
+  }, 15 * 60 * 1000);
+}
+
 // ── Démarrage ─────────────────────────────────────────────────────────────────
 server.listen(PORT, () => {
   console.log(`✔ Among Legend — Serveur lancé sur http://localhost:${PORT}`);
 });
-

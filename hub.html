@@ -662,6 +662,21 @@ function initSocket(cb){
   socket.on('kicked',()=>{closeRoom();showToast('Vous avez été expulsé.',true);});
   socket.on('promoted_master',()=>showToast('✦ Tu es maintenant l\'hôte.'));
   socket.on('game_started',d=>showReveal(d.role,d.allPlayers));
+  socket.on('elu_sacre',d=>{
+    showToast('✦ Tu viens d\'être sacré — Tu n\'es plus qui tu étais.',false);
+    setTimeout(()=>{
+      const ov=document.createElement('div');
+      ov.style.cssText='position:fixed;inset:0;z-index:999999;background:rgba(5,4,10,.97);display:flex;align-items:center;justify-content:center;padding:2rem;';
+      ov.innerHTML=`<div style="max-width:480px;text-align:center;border:.5px solid var(--ev);border-radius:10px;padding:2.5rem;background:var(--surface);">
+        <div style="font-family:'Cinzel Decorative',serif;font-size:2rem;color:var(--gold);margin-bottom:1rem;">✦ L'Élu</div>
+        <div style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;color:var(--evt);margin-bottom:1.5rem;">LE SACRE</div>
+        <div style="font-size:1rem;color:var(--cream);line-height:1.7;margin-bottom:1.5rem;">${d.message}</div>
+        <div style="font-size:.9rem;color:var(--muted);font-style:italic;margin-bottom:2rem;">${d.detail}</div>
+        <button onclick="this.parentElement.parentElement.remove()" style="padding:.8rem 2rem;background:linear-gradient(135deg,var(--gd),var(--gold));border:none;border-radius:3px;color:#05040a;font-family:'Cinzel',serif;font-weight:700;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;">J'ai compris — Je suis L'Élu</button>
+      </div>`;
+      document.body.appendChild(ov);
+    },500);
+  });
   cb&&cb();
 }
 
